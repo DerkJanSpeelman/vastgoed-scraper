@@ -38,6 +38,7 @@ export function toGetListingByIdDto(
     agencyId:            row.agency_id,
     agencyName:          row.agency_name,
     agencyWebsiteUrl:    row.agency_website_url,
+    agencyIsDemo:        row.agency_is_demo,
     propertyTypeId:      row.property_type_id,
     isStilleVerkoop:     row.is_stille_verkoop,
     livingAreaM2:        row.living_area_m2,

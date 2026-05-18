@@ -1,4 +1,4 @@
-.PHONY: dev build typecheck test test-file test-coverage migrate migrate-rollback seed seed-one install up down logs shell
+.PHONY: dev build typecheck test test-file test-coverage migrate migrate-rollback seed seed-one truncate install up down logs shell
 
 COMPOSE = docker compose -f ../docker-compose.yml
 EXEC    = $(COMPOSE) exec app
@@ -41,6 +41,9 @@ seed:
 
 seed-one:
 	$(EXEC) yarn seed:one $(seeder)
+
+truncate:
+	$(EXEC) yarn truncate
 
 install:
 	$(EXEC) yarn add $(package)

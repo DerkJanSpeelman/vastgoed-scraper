@@ -12,7 +12,8 @@
     "migrate": "tsx db/migrations/index.ts",
     "migrate:rollback": "tsx db/migrations/index.ts rollback",
     "seed": "tsx db/seeders/index.ts",
-    "seed:one": "tsx db/seeders/seed-one.ts"
+    "seed:one": "tsx db/seeders/seed-one.ts",
+    "truncate": "tsx db/seeders/truncate.ts"
   },
   "dependencies": {
     "@testing-library/dom": "^10.4.1",

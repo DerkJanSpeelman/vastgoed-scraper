@@ -11,4 +11,9 @@ describe("Badge", () => {
     render(<Badge variant="stille-verkoop" />);
     expect(screen.getByText("Stille verkoop")).toBeInTheDocument();
   });
+
+  it("renders demo label", () => {
+    render(<Badge variant="demo" />);
+    expect(screen.getByText("Demo")).toBeInTheDocument();
+  });
 });

@@ -29,3 +29,9 @@
   border-radius: 50%;
   background: var(--accent);
 }
+
+.demo {
+  background: color-mix(in oklab, var(--text-muted) 12%, transparent);
+  color: var(--text-muted);
+  border: 1px solid color-mix(in oklab, var(--text-muted) 20%, transparent);
+}

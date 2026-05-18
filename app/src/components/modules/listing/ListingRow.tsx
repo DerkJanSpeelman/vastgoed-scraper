@@ -37,10 +37,11 @@ export function ListingRow({ listing }: ListingRowProps) {
           {listing.imageCount > 0 && (
             <span className={styles.thumbCount}>{listing.imageCount}</span>
           )}
-          {(nieuwbouw || listing.isStilleVerkoop) && (
+          {(nieuwbouw || listing.isStilleVerkoop || listing.agencyIsDemo) && (
             <span className={styles.thumbBadge}>
               {listing.isStilleVerkoop && <Badge variant="stille-verkoop" />}
               {nieuwbouw && <Badge variant="nieuwbouw" />}
+              {listing.agencyIsDemo && <Badge variant="demo" />}
             </span>
           )}
         </div>

@@ -13,6 +13,7 @@ const baseRow: GetListingsRow = {
   agency_id: 1,
   agency_name: "Brecheisen Makelaars",
   agency_website_url: "https://www.brecheisen.nl",
+  agency_is_demo: false,
   property_type_id: 1,
   is_stille_verkoop: true,
   living_area_m2: 150,

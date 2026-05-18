@@ -10,6 +10,7 @@ export interface GetListingsDto {
   agencyId:              number | null;
   agencyName:            string | null;
   agencyWebsiteUrl:      string | null;
+  agencyIsDemo:          boolean;
   propertyTypeId:        number;
   isStilleVerkoop:       boolean;
   livingAreaM2:          number | null;

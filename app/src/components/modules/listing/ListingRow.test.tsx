@@ -14,6 +14,7 @@ const baseListing: GetListingsDto = {
   agencyId: 1,
   agencyName: "Brecheisen Makelaars",
   agencyWebsiteUrl: "https://www.brecheisen.nl",
+  agencyIsDemo: false,
   propertyTypeId: 1,
   isStilleVerkoop: false,
   livingAreaM2: 150,
@@ -60,6 +61,16 @@ describe("ListingRow", () => {
     render(<ListingRow listing={{ ...baseListing, livingAreaM2: null }} />);
     const placeholders = screen.getAllByText("—");
     expect(placeholders.length).toBeGreaterThan(0);
+  });
+
+  it("shows demo badge when agencyIsDemo is true", () => {
+    render(<ListingRow listing={{ ...baseListing, agencyIsDemo: true }} />);
+    expect(screen.getByText("Demo")).toBeInTheDocument();
+  });
+
+  it("does not show demo badge when agencyIsDemo is false", () => {
+    render(<ListingRow listing={{ ...baseListing, agencyIsDemo: false }} />);
+    expect(screen.queryByText("Demo")).not.toBeInTheDocument();
   });
 
   it("links to detail page", () => {

@@ -10,6 +10,7 @@ export interface GetListingsRow {
   agency_id:             number | null;
   agency_name:           string | null;
   agency_website_url:    string | null;
+  agency_is_demo:        boolean;
   property_type_id:      number;
   is_stille_verkoop:     boolean;
   living_area_m2:        number | null;
