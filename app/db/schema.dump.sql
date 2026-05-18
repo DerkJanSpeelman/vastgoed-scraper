@@ -1,5 +1,5 @@
 -- Schema dump — update by hand when writing migrations. Do not regenerate via shell.
--- Last updated: migration 009_add_agency_meta
+-- Last updated: migration 011_create_scraper_runs
 
 CREATE TABLE IF NOT EXISTS schema_migrations (
     version TEXT PRIMARY KEY,
@@ -72,4 +72,40 @@ CREATE TABLE IF NOT EXISTS listing_prices (
     amount        INTEGER     NOT NULL,
     price_type_id INTEGER     NOT NULL DEFAULT 1,
     scraped_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- type: 'overview' | 'detail' — one config per type per agency
+-- status: unconfigured → configured → active | paused | error
+-- config JSONB shape differs per type; see .claude/PRPs/prds/admin-scraper-management.md
+CREATE TABLE IF NOT EXISTS scraper_configs (
+    id          SERIAL      PRIMARY KEY,
+    agency_id   INTEGER     NOT NULL REFERENCES agencies(id) ON DELETE CASCADE,
+    type        TEXT        NOT NULL CHECK (type IN ('overview', 'detail')),
+    status      TEXT        NOT NULL DEFAULT 'unconfigured'
+                            CHECK (status IN ('unconfigured', 'configured', 'active', 'paused', 'error')),
+    uri_path    TEXT,
+    config      JSONB       NOT NULL DEFAULT '{}',
+    last_run_at TIMESTAMPTZ,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (agency_id, type)
+);
+
+-- triggered_by: 'manual' | 'scheduled' — status: pending → running → success | failed
+CREATE TABLE IF NOT EXISTS scraper_runs (
+    id                 SERIAL      PRIMARY KEY,
+    scraper_config_id  INTEGER     NOT NULL REFERENCES scraper_configs(id) ON DELETE CASCADE,
+    agency_id          INTEGER     NOT NULL REFERENCES agencies(id),
+    status             TEXT        NOT NULL DEFAULT 'pending'
+                                   CHECK (status IN ('pending', 'running', 'success', 'failed')),
+    triggered_by       TEXT        NOT NULL DEFAULT 'manual'
+                                   CHECK (triggered_by IN ('manual', 'scheduled')),
+    started_at         TIMESTAMPTZ,
+    finished_at        TIMESTAMPTZ,
+    listings_found     INTEGER,
+    listings_added     INTEGER,
+    listings_updated   INTEGER,
+    error_message      TEXT,
+    error_details      JSONB,
+    created_at         TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

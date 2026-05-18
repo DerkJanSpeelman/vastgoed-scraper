@@ -8,6 +8,8 @@ import * as m006 from "./006_create_listings";
 import * as m007 from "./007_create_listing_images";
 import * as m008 from "./008_create_listing_prices";
 import * as m009 from "./009_add_agency_meta";
+import * as m010 from "./010_create_scraper_configs";
+import * as m011 from "./011_create_scraper_runs";
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) throw new Error("DATABASE_URL is not set");
@@ -24,6 +26,8 @@ const migrations = [
   { version: "007_create_listing_images", ...m007 },
   { version: "008_create_listing_prices", ...m008 },
   { version: "009_add_agency_meta", ...m009 },
+  { version: "010_create_scraper_configs", ...m010 },
+  { version: "011_create_scraper_runs", ...m011 },
 ];
 
 async function migrate() {
