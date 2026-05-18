@@ -163,7 +163,7 @@ CREATE TABLE scraper_runs (
 
 ---
 
-### Phase 5 — Scraper config UI [ ]
+### Phase 5 — Scraper config UI [x] PR #12
 
 **Scope:**
 - `/admin/agencies/[id]/scrapers/overview` — overview scraper config page.
