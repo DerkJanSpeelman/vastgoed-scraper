@@ -1,0 +1,160 @@
+.row {
+  display: grid;
+  grid-template-columns: 220px 1fr 220px;
+  gap: 28px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--line-soft);
+  position: relative;
+}
+
+.silent::before {
+  content: "";
+  position: absolute;
+  left: -16px;
+  top: 22px;
+  bottom: 22px;
+  width: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* thumb */
+.thumbLink { display: block; }
+
+.thumb {
+  width: 220px;
+  height: 150px;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  background: var(--bg-soft);
+  border: 1px solid var(--line-soft);
+  flex-shrink: 0;
+}
+
+.thumbImg { object-fit: cover; }
+
+.thumbPlaceholder {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, oklch(0.88 0.02 260) 0%, oklch(0.78 0.03 260) 100%);
+}
+
+.thumbCount {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  background: color-mix(in oklab, var(--ink) 88%, transparent);
+  color: white;
+  padding: 3px 7px;
+  border-radius: 3px;
+  font-variant-numeric: tabular-nums;
+}
+
+.thumbBadge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+/* main col */
+.main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 12px;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.addr {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.028em;
+  color: var(--ink);
+  text-decoration: none;
+  transition: color var(--duration-fast);
+}
+.addr:hover { color: var(--accent); }
+
+.location {
+  font-size: 13px;
+  color: var(--ink-3);
+  font-weight: 400;
+}
+
+.meta {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.agency {
+  font-size: 13px;
+  color: var(--ink-3);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.agencyLink {
+  color: var(--ink-2);
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color var(--duration-fast);
+}
+.agencyLink:hover { color: var(--accent); }
+
+.agencyName {
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+.agencyMissing {
+  color: var(--ink-4);
+  font-style: italic;
+}
+
+/* right col */
+.right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
+  text-align: right;
+}
+
+.priceBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.price {
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+}
+
+.priceType {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+  margin-top: 6px;
+}
