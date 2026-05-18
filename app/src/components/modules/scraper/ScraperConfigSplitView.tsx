@@ -16,10 +16,14 @@ interface Props {
 export function ScraperConfigSplitView({ agencyId, agencyDomain, type, existing }: Props) {
   const [activeTargetField, setActiveTargetField] = useState<string | null>(null);
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
+  const [liveUriPath, setLiveUriPath] = useState<string>(existing?.uriPath ?? '');
+  const [liveExampleUrl, setLiveExampleUrl] = useState<string>(
+    (existing?.config as Record<string, unknown>)?.example_url as string ?? '',
+  );
 
   const previewUrl = type === 'overview'
-    ? (agencyDomain ? `${agencyDomain}${fieldValues['uri_path'] ?? existing?.uriPath ?? ''}` : null)
-    : (fieldValues['example_url'] ?? (existing?.config as Record<string, unknown>)?.example_url as string ?? null);
+    ? (agencyDomain && liveUriPath ? `${agencyDomain}${liveUriPath}` : null)
+    : (liveExampleUrl || null);
 
   const handleElementSelected = useCallback((fieldKey: string, selector: string) => {
     setFieldValues(prev => ({ ...prev, [fieldKey]: selector }));
@@ -40,6 +44,9 @@ export function ScraperConfigSplitView({ agencyId, agencyDomain, type, existing 
           existing={existing}
           activeTargetField={activeTargetField}
           onTargetRequest={handleTargetRequest}
+          injectedFieldValues={fieldValues}
+          onUriPathChange={setLiveUriPath}
+          onExampleUrlChange={setLiveExampleUrl}
         />
       </div>
       <div className={styles.right}>

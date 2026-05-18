@@ -15,6 +15,8 @@ export function ProxyIframe({ url, activeFieldKey, onElementSelected }: Props) {
   useEffect(() => {
     function onMessage(e: MessageEvent) {
       if (!e.data || e.data.type !== 'element-selected') return;
+      if (iframeRef.current && e.source !== iframeRef.current.contentWindow) return;
+      if (typeof e.data.fieldKey !== 'string' || typeof e.data.selector !== 'string') return;
       onElementSelected(e.data.fieldKey, e.data.selector);
     }
     window.addEventListener('message', onMessage);

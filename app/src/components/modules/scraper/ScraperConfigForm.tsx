@@ -42,6 +42,9 @@ interface SharedProps {
   agencyDomain: string | null;
   activeTargetField: string | null;
   onTargetRequest: (fieldKey: string) => void;
+  injectedFieldValues?: Record<string, string>;
+  onUriPathChange?: (v: string) => void;
+  onExampleUrlChange?: (v: string) => void;
 }
 
 interface OverviewProps extends SharedProps { type: 'overview'; existing: GetScraperConfigsDto | null; }
@@ -67,7 +70,8 @@ function fieldCfg(existing: GetScraperConfigsDto | null, field: string, key: str
 }
 
 export function ScraperConfigForm(props: Props) {
-  const { agencyId, agencyDomain, activeTargetField, onTargetRequest, existing } = props;
+  const { agencyId, agencyDomain, activeTargetField, onTargetRequest, existing,
+    injectedFieldValues, onUriPathChange, onExampleUrlChange } = props;
   const domain = domainFromUrl(agencyDomain);
 
   const [state, formAction, isPending] = useActionState<ScraperConfigActionState | null, FormData>(
@@ -106,7 +110,8 @@ export function ScraperConfigForm(props: Props) {
               name="uri_path"
               placeholder="/aanbod"
               before={domain || undefined}
-              defaultValue={existing?.uriPath ?? ''}
+              defaultValue={injectedFieldValues?.['uri_path'] ?? existing?.uriPath ?? ''}
+              onChange={e => onUriPathChange?.((e.target as HTMLInputElement).value)}
             />
 
             <div className={styles.rowFull}>
@@ -231,6 +236,7 @@ export function ScraperConfigForm(props: Props) {
               type="url"
               placeholder="https://www.makelaar.nl/aanbod/123-adres"
               defaultValue={cfg(existing, 'example_url', '')}
+              onChange={e => onExampleUrlChange?.((e.target as HTMLInputElement).value)}
             />
             <Input
               label="URL patroon"
