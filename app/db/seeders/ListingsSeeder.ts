@@ -5,8 +5,8 @@ import { Sql } from "postgres";
 const listingData = [
   {
     street: "Apollolaan", house_number: "154", house_number_addition: null,
-    city: "Amsterdam-Zuid", agency: "Brecheisen Makelaars",
-    source_url: "intern://feed/brecheisen/4821",
+    city: "Amsterdam-Zuid",
+    source_url: "intern://demo/1",
     property_type_id: 1, is_stille_verkoop: true,
     living_area_m2: 150, plot_area_m2: null, bedrooms: 4,
     energy_label: "B", year_built: 1928,
@@ -25,8 +25,8 @@ const listingData = [
   },
   {
     street: "Cartesiusweg", house_number: "145", house_number_addition: "Bouwnr. 28",
-    city: "Utrecht", agency: "Boelens Jorritsma",
-    source_url: "https://nieuwbouw.example/cartesius/28",
+    city: "Utrecht",
+    source_url: "intern://demo/2",
     property_type_id: 2, is_stille_verkoop: false,
     living_area_m2: 85, plot_area_m2: null, bedrooms: 2,
     energy_label: "A++", year_built: 2026,
@@ -42,8 +42,8 @@ const listingData = [
   },
   {
     street: "Frederik Hendriklaan", house_number: "287", house_number_addition: null,
-    city: "Den Haag", agency: "NVM Makelaars Den Haag",
-    source_url: "https://makelaarsdenhaag.nl/aanbod/frederik-hendriklaan-287",
+    city: "Den Haag",
+    source_url: "intern://demo/3",
     property_type_id: 1, is_stille_verkoop: true,
     living_area_m2: 155, plot_area_m2: 220, bedrooms: 4,
     energy_label: "C", year_built: 1912,
@@ -58,8 +58,8 @@ const listingData = [
   },
   {
     street: "Zevenhuizerlaan", house_number: "8", house_number_addition: null,
-    city: "Rotterdam-Zuid", agency: "ERA Makelaars",
-    source_url: "https://era.nl/aanbod/zevenhuizerlaan-8",
+    city: "Rotterdam-Zuid",
+    source_url: "intern://demo/4",
     property_type_id: 1, is_stille_verkoop: false,
     living_area_m2: 95, plot_area_m2: 140, bedrooms: 3,
     energy_label: "D", year_built: 1965,
@@ -72,8 +72,8 @@ const listingData = [
   },
   {
     street: "Herengracht", house_number: "432", house_number_addition: null,
-    city: "Amsterdam", agency: "Engel & Völkers",
-    source_url: "intern://engelvoelkers/ams-4320",
+    city: "Amsterdam",
+    source_url: "intern://demo/5",
     property_type_id: 1, is_stille_verkoop: false,
     living_area_m2: 210, plot_area_m2: null, bedrooms: 5,
     energy_label: "E", year_built: 1685,
@@ -89,8 +89,8 @@ const listingData = [
   },
   {
     street: "Stationsplein", house_number: "1", house_number_addition: "fase 2",
-    city: "Eindhoven", agency: "MVGM Wonen",
-    source_url: "https://nieuwbouw.example/eindhoven-stationsplein/f2",
+    city: "Eindhoven",
+    source_url: "intern://demo/6",
     property_type_id: 2, is_stille_verkoop: false,
     living_area_m2: 72, plot_area_m2: null, bedrooms: 2,
     energy_label: "A", year_built: 2025,
@@ -104,8 +104,8 @@ const listingData = [
   },
   {
     street: "Riviervismarkt", house_number: "11", house_number_addition: null,
-    city: "Den Haag", agency: "Makelaarsland",
-    source_url: "https://makelaarsland.nl/aanbod/riviervismarkt-11",
+    city: "Den Haag",
+    source_url: "intern://demo/7",
     property_type_id: 1, is_stille_verkoop: false,
     living_area_m2: null, plot_area_m2: null, bedrooms: null,
     energy_label: null, year_built: 1902,
@@ -117,19 +117,16 @@ const listingData = [
 
 export async function seed(sql: Sql) {
   await sql.begin(async (tx) => {
+    const [demoAgency] = await tx<{ id: number }[]>/* sql */`
+      SELECT id FROM agencies WHERE is_demo = true LIMIT 1
+    `;
+    if (!demoAgency) throw new Error("Demo agency not found — run AgenciesSeeder first");
+
     for (const l of listingData) {
       const [city] = await tx<{ id: number }[]>/* sql */`
         SELECT id FROM cities WHERE name = ${l.city}
       `;
       if (!city) continue;
-
-      let agencyId: number | null = null;
-      if (l.agency) {
-        const [agency] = await tx<{ id: number }[]>/* sql */`
-          SELECT id FROM agencies WHERE name = ${l.agency}
-        `;
-        agencyId = agency?.id ?? null;
-      }
 
       const [listing] = await tx<{ id: number }[]>/* sql */`
         INSERT INTO listings (
@@ -139,7 +136,7 @@ export async function seed(sql: Sql) {
           description, year_built
         ) VALUES (
           ${l.street}, ${l.house_number}, ${l.house_number_addition ?? null},
-          ${city.id}, ${agencyId},
+          ${city.id}, ${demoAgency.id},
           ${l.source_url}, ${l.property_type_id}, ${l.is_stille_verkoop},
           ${l.living_area_m2 ?? null}, ${l.plot_area_m2 ?? null},
           ${l.bedrooms ?? null}, ${l.energy_label ?? null},

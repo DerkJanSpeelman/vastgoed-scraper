@@ -1,5 +1,5 @@
 -- Schema dump — update by hand when writing migrations. Do not regenerate via shell.
--- Last updated: migration 008_create_listing_prices
+-- Last updated: migration 009_add_agency_meta
 
 CREATE TABLE IF NOT EXISTS schema_migrations (
     version TEXT PRIMARY KEY,
@@ -28,6 +28,9 @@ CREATE TABLE IF NOT EXISTS agencies (
     id          SERIAL      PRIMARY KEY,
     name        TEXT        NOT NULL,
     website_url TEXT,
+    is_demo     BOOLEAN     NOT NULL DEFAULT FALSE,
+    data_source TEXT        NOT NULL DEFAULT 'scraper'
+                            CHECK (data_source IN ('scraper', 'mailing_list', 'both')),
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

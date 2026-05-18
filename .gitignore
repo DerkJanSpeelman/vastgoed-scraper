@@ -1,6 +1,12 @@
 app/node_modules/
 app/.next/
 app/.env
+app/.pnp.cjs
+app/.pnp.loader.mjs
+app/.yarn/install-state.gz
+app/next-env.d.ts
+app/tsconfig.tsbuildinfo
+app/yarn.lock
 .env
 *.local
 .DS_Store

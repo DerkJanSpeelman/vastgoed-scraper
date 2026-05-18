@@ -117,7 +117,7 @@ Container: `src/lib/modules/<domain>/<domain>.container.ts`
 
 | Component | Tier | Location | Props summary |
 |---|---|---|---|
-| `Badge` | ui | `src/components/ui/badge/Badge.tsx` | `variant: "nieuwbouw" \| "stille-verkoop"` |
+| `Badge` | ui | `src/components/ui/badge/Badge.tsx` | `variant: "nieuwbouw" \| "stille-verkoop" \| "demo"` |
 | `EnergyLabel` | ui | `src/components/ui/energy-label/EnergyLabel.tsx` | `label: string \| null \| undefined` — renders colored badge or "—" |
 | `StatItem` | ui | `src/components/ui/stat-item/StatItem.tsx` | `icon: ReactNode, value: ReactNode, unit?: string` — renders "—" for empty values |
 | `Topbar` | ui | `src/components/ui/topbar/Topbar.tsx` | `listingCount?: number` — sticky header with brand + count |
