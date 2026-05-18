@@ -1,6 +1,6 @@
 import { sql } from "@/db/client";
-import { ListingReadRepository } from "../../application/queries/get-listings/get-listings.read-repository";
-import { GetListingsFilters } from "../../application/queries/get-listings/get-listings.query";
+import { ListingReadRepository, ListingStats } from "../../application/queries/get-listings/get-listings.read-repository";
+import { GetListingsFilters, ListingsSortBy } from "../../application/queries/get-listings/get-listings.query";
 import { GetListingsRow } from "../../application/queries/get-listings/get-listings.row";
 import { GetListingByIdRow } from "../../application/queries/get-listing-by-id/get-listing-by-id.row";
 import { GetListingImageRow } from "../../application/queries/get-listing-by-id/get-listing-image.row";
@@ -9,9 +9,15 @@ import { GetListingPriceRow } from "../../application/queries/get-listing-by-id/
 export class ListingReadRepositoryImpl implements ListingReadRepository {
   async findAll(
     filters: GetListingsFilters,
+    sortBy: ListingsSortBy,
     limit: number,
     offset: number,
   ): Promise<GetListingsRow[]> {
+    const order =
+      sortBy === "price-asc"  ? sql`lp_latest.amount ASC NULLS LAST` :
+      sortBy === "price-desc" ? sql`lp_latest.amount DESC NULLS LAST` :
+                                sql`l.created_at DESC`;
+
     return sql<GetListingsRow[]>`
       SELECT
         l.id,
@@ -64,19 +70,55 @@ export class ListingReadRepositoryImpl implements ListingReadRepository {
         FROM listing_images
         WHERE listing_id = l.id
       ) img_counts ON true
-      WHERE 1=1
-        ${filters.propertyTypeId !== undefined
-          ? sql`AND l.property_type_id = ${filters.propertyTypeId}`
-          : sql``}
-        ${filters.isStilleVerkoop !== undefined
-          ? sql`AND l.is_stille_verkoop = ${filters.isStilleVerkoop}`
-          : sql``}
-        ${filters.provinceId !== undefined
-          ? sql`AND pr.id = ${filters.provinceId}`
-          : sql``}
-      ORDER BY l.created_at DESC
+      ${buildWhere(filters)}
+      ORDER BY ${order}
       LIMIT ${limit} OFFSET ${offset}
     `;
+  }
+
+  async findCount(filters: GetListingsFilters): Promise<number> {
+    const rows = await sql<{ count: string }[]>`
+      SELECT COUNT(*)::text AS count
+      FROM listings l
+      JOIN cities        ci ON ci.id = l.city_id
+      JOIN municipalities mu ON mu.id = ci.municipality_id
+      JOIN provinces     pr ON pr.id = mu.province_id
+      LEFT JOIN LATERAL (
+        SELECT amount
+        FROM listing_prices
+        WHERE listing_id = l.id
+        ORDER BY scraped_at DESC
+        LIMIT 1
+      ) lp_latest ON true
+      ${buildWhere(filters)}
+    `;
+    return parseInt(rows[0]?.count ?? "0", 10);
+  }
+
+  async findStats(): Promise<ListingStats> {
+    const rows = await sql<{
+      total: number;
+      nieuwbouw: number;
+      bestaande_bouw: number;
+      stille_verkoop: number;
+      agencies: number;
+    }[]>`
+      SELECT
+        COUNT(*)::int                                              AS total,
+        COUNT(*) FILTER (WHERE property_type_id = 2)::int         AS nieuwbouw,
+        COUNT(*) FILTER (WHERE property_type_id = 1)::int         AS bestaande_bouw,
+        COUNT(*) FILTER (WHERE is_stille_verkoop = true)::int     AS stille_verkoop,
+        COUNT(DISTINCT agency_id)::int                            AS agencies
+      FROM listings
+    `;
+    const row = rows[0];
+    return {
+      total:         row?.total         ?? 0,
+      nieuwbouw:     row?.nieuwbouw     ?? 0,
+      bestaandeBouw: row?.bestaande_bouw ?? 0,
+      stilleVerkoop: row?.stille_verkoop ?? 0,
+      agencies:      row?.agencies      ?? 0,
+    };
   }
 
   async findById(id: number): Promise<GetListingByIdRow | null> {
@@ -140,4 +182,62 @@ export class ListingReadRepositoryImpl implements ListingReadRepository {
       ORDER BY scraped_at DESC
     `;
   }
+}
+
+function buildWhere(filters: GetListingsFilters) {
+  const conditions: ReturnType<typeof sql>[] = [sql`WHERE 1=1`];
+
+  // Property type filters — mutually exclusive takes precedence
+  if (filters.isNieuwbouw && !filters.isBestaandeBouw) {
+    conditions.push(sql`AND l.property_type_id = 2`);
+  } else if (filters.isBestaandeBouw && !filters.isNieuwbouw) {
+    conditions.push(sql`AND l.property_type_id = 1`);
+  }
+
+  if (filters.isStilleVerkoop !== undefined) {
+    conditions.push(sql`AND l.is_stille_verkoop = ${filters.isStilleVerkoop}`);
+  }
+
+  if (filters.provinceId !== undefined) {
+    conditions.push(sql`AND pr.id = ${filters.provinceId}`);
+  }
+
+  if (filters.cityIds && filters.cityIds.length > 0) {
+    conditions.push(sql`AND ci.id = ANY(${filters.cityIds})`);
+  }
+
+  if (filters.municipalityIds && filters.municipalityIds.length > 0) {
+    conditions.push(sql`AND mu.id = ANY(${filters.municipalityIds})`);
+  }
+
+  if (filters.minPrice !== undefined) {
+    conditions.push(sql`AND lp_latest.amount >= ${filters.minPrice}`);
+  }
+
+  if (filters.maxPrice !== undefined) {
+    conditions.push(sql`AND lp_latest.amount <= ${filters.maxPrice}`);
+  }
+
+  if (filters.minLivingArea !== undefined) {
+    conditions.push(sql`AND l.living_area_m2 >= ${filters.minLivingArea}`);
+  }
+
+  if (filters.maxLivingArea !== undefined) {
+    conditions.push(sql`AND l.living_area_m2 <= ${filters.maxLivingArea}`);
+  }
+
+  if (filters.minPlotArea !== undefined) {
+    conditions.push(sql`AND l.plot_area_m2 >= ${filters.minPlotArea}`);
+  }
+
+  if (filters.maxPlotArea !== undefined) {
+    conditions.push(sql`AND l.plot_area_m2 <= ${filters.maxPlotArea}`);
+  }
+
+  if (filters.energyLabels && filters.energyLabels.length > 0) {
+    conditions.push(sql`AND l.energy_label = ANY(${filters.energyLabels})`);
+  }
+
+  // Join all conditions — porsager sql template tag concatenation
+  return conditions.reduce((acc, cond) => sql`${acc} ${cond}`);
 }

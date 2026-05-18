@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { sql } from "../client";
 
 const seederMap: Record<string, () => Promise<{ seed: (s: typeof sql) => Promise<void> }>> = {

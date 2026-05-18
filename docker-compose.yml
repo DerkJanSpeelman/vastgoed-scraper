@@ -26,8 +26,6 @@ services:
       NODE_ENV: development
     volumes:
       - ./app:/app
-      - /app/node_modules
-      - /app/.next
     depends_on:
       db:
         condition: service_healthy

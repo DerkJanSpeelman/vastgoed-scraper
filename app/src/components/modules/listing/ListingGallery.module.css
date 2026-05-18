@@ -82,6 +82,14 @@
   font-variant-numeric: tabular-nums;
 }
 
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover .img {
+  opacity: 0.9;
+}
+
 .floorEmpty {
   margin-top: 6px;
   padding: 18px;

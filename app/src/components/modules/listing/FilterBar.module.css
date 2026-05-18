@@ -1,18 +1,30 @@
 .filterbar {
   max-width: 1320px;
   margin: 0 auto;
-  padding: 22px 28px 16px;
+  padding: 0 28px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* Row 1 */
+.row1 {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
-  border-bottom: 1px solid var(--line);
+  padding: 16px 0;
+}
+
+.chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .chip {
   border: 1px solid var(--line);
   background: var(--bg-card);
-  padding: 7px 12px;
+  padding: 0 12px;
+  height: 32px;
   border-radius: 4px;
   font-size: 13px;
   font-weight: 500;
@@ -22,6 +34,7 @@
   gap: 8px;
   cursor: pointer;
   transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
+  font-family: inherit;
 }
 
 .chip:hover {
@@ -35,8 +48,18 @@
   border-color: var(--ink);
 }
 
+.chipStille {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  border-color: color-mix(in oklab, var(--accent) 40%, transparent);
+}
+
+.chipStille:hover {
+  border-color: var(--accent);
+}
+
 .count {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
   opacity: 0.7;
   font-variant-numeric: tabular-nums;
@@ -46,18 +69,36 @@
   width: 1px;
   height: 22px;
   background: var(--line);
-  margin: 0 8px;
+  margin: 0 4px;
   flex-shrink: 0;
 }
 
-.right {
+.controls {
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
-.chipSelect {
+.wis {
+  background: none;
+  border: none;
+  padding: 0 8px;
+  height: 32px;
+  color: var(--ink-3);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: color var(--duration-fast);
+  font-family: inherit;
+}
+
+.wis:hover { color: var(--ink); }
+
+.sortSelect {
   appearance: none;
   border: 1px solid var(--line);
   background: var(--bg-card);
@@ -65,17 +106,297 @@
   font-size: 13px;
   font-weight: 500;
   color: var(--ink-2);
-  padding: 7px 28px 7px 12px;
+  padding: 0 28px 0 12px;
+  height: 32px;
   border-radius: 4px;
   cursor: pointer;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a7a82' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>");
   background-repeat: no-repeat;
-  background-position: right 9px center;
+  background-position: right 8px center;
   background-size: 11px 11px;
   transition: border-color var(--duration-fast), color var(--duration-fast);
 }
 
-.chipSelect:hover {
+.sortSelect:hover {
   border-color: color-mix(in oklab, var(--ink) 25%, var(--line));
   color: var(--ink);
+}
+
+/* Expandable panel */
+.panelOuter {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 280ms var(--ease-standard);
+  overflow: hidden;
+}
+
+.panelOpen {
+  grid-template-rows: 1fr;
+}
+
+.panelInner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 4px 0 20px;
+  border-top: 1px solid var(--line-soft);
+}
+
+/* Filter rows */
+.filterRow {
+  display: grid;
+  grid-template-columns: 110px 1fr 36px;
+  align-items: start;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.filterRow:last-child {
+  border-bottom: none;
+}
+
+.filterLabel {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding-top: 6px;
+  white-space: nowrap;
+}
+
+.filterInput {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Tags */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 3px 8px 3px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.tagRemove {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--ink-4);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: color var(--duration-fast);
+  font-family: inherit;
+}
+
+.tagRemove:hover { color: var(--accent); }
+
+/* Search with dropdown */
+.searchWrap {
+  position: relative;
+}
+
+.searchInput {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: var(--bg-card);
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink);
+  padding: 6px 12px;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color var(--duration-fast);
+  box-sizing: border-box;
+}
+
+.searchInput:focus {
+  border-color: color-mix(in oklab, var(--ink) 40%, var(--line));
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px oklch(0 0 0 / 0.10);
+  z-index: 100;
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.dropItem {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 8px 14px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--duration-fast);
+  gap: 12px;
+}
+
+.dropItem:hover { background: var(--bg-soft); }
+
+.dropMeta {
+  font-size: 11px;
+  color: var(--ink-4);
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+/* Province select */
+.provinceSelect {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: var(--bg-card);
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink-2);
+  padding: 6px 28px 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a7a82' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 11px 11px;
+  max-width: 240px;
+  transition: border-color var(--duration-fast);
+}
+
+.provinceSelect:hover {
+  border-color: color-mix(in oklab, var(--ink) 25%, var(--line));
+}
+
+/* Energy label chips */
+.energyChips {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.energyChip {
+  border: 1px solid var(--line);
+  background: var(--bg-card);
+  padding: 4px 9px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+.energyChip:hover {
+  border-color: color-mix(in oklab, var(--ink) 25%, var(--line));
+  color: var(--ink);
+}
+
+.energyChip.active {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+
+/* Range inputs */
+.rangeRow {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.rangeInput {
+  width: 100px;
+  border: 1px solid var(--line);
+  background: var(--bg-card);
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink);
+  padding: 6px 10px;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color var(--duration-fast);
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.rangeInput::-webkit-outer-spin-button,
+.rangeInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.rangeInput:focus {
+  border-color: color-mix(in oklab, var(--ink) 40%, var(--line));
+}
+
+.rangeSep {
+  color: var(--ink-4);
+  font-size: 13px;
+}
+
+.rangeUnit {
+  font-size: 12px;
+  color: var(--ink-3);
+  font-weight: 500;
+}
+
+/* Reset button per row */
+.resetBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 16px;
+  color: var(--ink-4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  transition: color var(--duration-fast), background var(--duration-fast);
+  margin-top: 4px;
+  font-family: inherit;
+}
+
+.resetBtn:hover {
+  color: var(--accent);
+  background: var(--accent-soft);
 }

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge/Badge";
 import { EnergyLabel } from "@/components/ui/energy-label/EnergyLabel";
 import { StatItem } from "@/components/ui/stat-item/StatItem";
 import { ListingGallery } from "@/components/modules/listing/ListingGallery";
+import { ExpandableDescription } from "@/components/modules/listing/ExpandableDescription";
 import { IconBack, IconLiving, IconPlot, IconBed, IconBolt, IconExt } from "@/components/modules/listing/listing-icons";
 import { formatPrice, formatPriceType, formatPricePerM2, isNieuwbouw } from "@/components/modules/listing/listing-formatters";
 import styles from "./page.module.css";
@@ -55,6 +56,19 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
           </div>
         </header>
 
+        {listing.isStilleVerkoop && (
+          <div className={styles.stilleAlert}>
+            <div className={styles.stilleTitle}>
+              <span className={styles.stilleDot} aria-hidden />
+              Off-market
+            </div>
+            <p className={styles.stilleBody}>
+              Deze woning is in stille verkoop — verschijnt niet op Funda.
+              {listing.agencyName ? ` Bezichtigingen lopen via ${listing.agencyName}.` : ""}
+            </p>
+          </div>
+        )}
+
         <ListingGallery images={listing.images} address={address} />
 
         <div className={styles.grid}>
@@ -91,19 +105,14 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
               </div>
             </section>
 
-            {listing.description && (
-              <section className={styles.section}>
-                <h2 className={styles.sectionLabel}>Omschrijving</h2>
-                <p className={styles.desc}>{listing.description}</p>
-              </section>
-            )}
-
-            {!listing.description && (
-              <section className={styles.section}>
-                <h2 className={styles.sectionLabel}>Omschrijving</h2>
+            <section className={styles.section}>
+              <h2 className={styles.sectionLabel}>Omschrijving</h2>
+              {listing.description ? (
+                <ExpandableDescription text={listing.description} />
+              ) : (
                 <p className={`${styles.desc} ${styles.descPlaceholder}`}>Geen omschrijving beschikbaar.</p>
-              </section>
-            )}
+              )}
+            </section>
           </div>
 
           <aside className={styles.sideCol}>

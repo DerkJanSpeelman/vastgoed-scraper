@@ -81,6 +81,39 @@
   margin: 10px 0 0;
 }
 
+/* stille verkoop alert */
+.stilleAlert {
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in oklab, var(--accent) 25%, transparent);
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+}
+
+.stilleTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stilleDot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.stilleBody {
+  font-size: 13px;
+  color: var(--accent-ink);
+  margin: 4px 0 0;
+}
+
 /* content grid */
 .grid {
   display: grid;
