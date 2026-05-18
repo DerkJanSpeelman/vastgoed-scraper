@@ -1,0 +1,55 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+}
+
+.websiteLink {
+  color: var(--ink-2);
+  text-decoration: none;
+  font-size: 0.8125rem;
+}
+
+.websiteLink:hover {
+  color: var(--accent-ink);
+  text-decoration: underline;
+}
+
+.emptyCell {
+  color: var(--ink-4);
+}
+
+.actionsCell {
+  display: flex;
+  gap: 8px;
+}
+
+.editLink {
+  font-size: 0.8125rem;
+  color: var(--ink-2);
+  text-decoration: none;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+}
+
+.editLink:hover {
+  background: var(--bg-soft);
+  color: var(--ink);
+}
+
+.scraperIcons {
+  display: flex;
+  gap: 6px;
+}

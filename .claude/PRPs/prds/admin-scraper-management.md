@@ -33,7 +33,7 @@
 
 ---
 
-### Phase 2 — Scraper DB schema [ ]
+### Phase 2 — Scraper DB schema [x] PR #9
 
 **Scope:**
 - Migration `010`: create `scraper_configs` table.

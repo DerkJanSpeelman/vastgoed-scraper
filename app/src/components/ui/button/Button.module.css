@@ -1,0 +1,80 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    opacity var(--duration-fast) var(--ease-standard);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* primary */
+.primary {
+  background: var(--ink);
+  color: var(--bg-card);
+  border-color: var(--ink);
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--ink-2);
+  border-color: var(--ink-2);
+}
+
+/* secondary */
+.secondary {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.secondary:hover:not(:disabled) {
+  background: var(--bg-soft);
+}
+
+/* ghost */
+.ghost {
+  background: transparent;
+  color: var(--ink-2);
+  border-color: transparent;
+}
+
+.ghost:hover:not(:disabled) {
+  background: var(--bg-soft);
+  color: var(--ink);
+}
+
+/* destructive */
+.destructive {
+  background: transparent;
+  color: oklch(0.50 0.19 25);
+  border-color: oklch(0.80 0.10 25);
+}
+
+.destructive:hover:not(:disabled) {
+  background: oklch(0.97 0.03 25);
+}
+
+/* sizes */
+.sm {
+  padding: 6px 12px;
+  font-size: 0.8125rem;
+}
+
+.lg {
+  padding: 12px 20px;
+  font-size: 1rem;
+}

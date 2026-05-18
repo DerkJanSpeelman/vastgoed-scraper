@@ -88,6 +88,7 @@ Single PostgreSQL instance shared for all domains.
 | `listing` | `listings`, `listing_images`, `listing_prices` | — | `GetListings`, `GetListingById` |
 | `location` | `provinces`, `municipalities`, `cities` | — | `GetProvinces`, `GetCities`, `GetMunicipalities` |
 | `scraper` | `scraper_configs`, `scraper_runs` | `UpsertScraperConfig`, `CreateScraperRun` | `GetScraperConfigs`, `GetScraperRuns` |
+| `agency` | `agencies` | — | `GetAgencies` |
 
 ## Domain modules (add as they are created)
 
@@ -126,8 +127,11 @@ Container: `src/lib/modules/<domain>/<domain>.container.ts`
 | Component | Tier | Location | Props summary |
 |---|---|---|---|
 | `Badge` | ui | `src/components/ui/badge/Badge.tsx` | `variant: "nieuwbouw" \| "stille-verkoop" \| "demo"` |
+| `Button` | ui | `src/components/ui/button/Button.tsx` | `text, variant?, size?, href?, onClick?, disabled?` — renders as `<button>` or `<Link>` |
 | `EnergyLabel` | ui | `src/components/ui/energy-label/EnergyLabel.tsx` | `label: string \| null \| undefined` — renders colored badge or "—" |
+| `ScraperStatusIcon` | ui | `src/components/ui/scraper-status-icon/ScraperStatusIcon.tsx` | `status: ScraperConfigStatus \| null` — colored icon with Dutch tooltip |
 | `StatItem` | ui | `src/components/ui/stat-item/StatItem.tsx` | `icon: ReactNode, value: ReactNode, unit?: string` — renders "—" for empty values |
+| `Table` | ui | `src/components/ui/table/Table.tsx` | `columns: ColumnDef<TRow>[], data: TRow[], rowKey?, onRowClick?` — client-side sortable table |
 | `Topbar` | ui | `src/components/ui/topbar/Topbar.tsx` | `listingCount?: number` — sticky header with brand + count |
 | `ListingRow` | modules/listing | `src/components/modules/listing/ListingRow.tsx` | `listing: GetListingsDto` — full listing row with image, stats, badges, agency |
 | `FilterBar` | modules/listing | `src/components/modules/listing/FilterBar.tsx` | `provinces: GetProvincesDto[], totalCount: number` — "use client"; chip filters + province select; URL-state driven |
