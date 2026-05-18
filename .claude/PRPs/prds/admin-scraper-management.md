@@ -33,7 +33,7 @@
 
 ---
 
-### Phase 2 — Scraper DB schema [ ]
+### Phase 2 — Scraper DB schema [x] PR #9
 
 **Scope:**
 - Migration `010`: create `scraper_configs` table.
@@ -126,7 +126,7 @@ CREATE TABLE scraper_runs (
 
 ---
 
-### Phase 3 — Admin layout + agencies overview [ ]
+### Phase 3 — Admin layout + agencies overview [x] PR #10
 
 **Scope:**
 - Admin layout: `src/app/admin/layout.tsx` — sidebar nav with "Makelaars" + "Scraper runs".
