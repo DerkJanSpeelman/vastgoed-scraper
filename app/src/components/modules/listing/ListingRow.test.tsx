@@ -68,6 +68,11 @@ describe("ListingRow", () => {
     expect(screen.getByText("Demo")).toBeInTheDocument();
   });
 
+  it("does not show demo badge when agencyIsDemo is false", () => {
+    render(<ListingRow listing={{ ...baseListing, agencyIsDemo: false }} />);
+    expect(screen.queryByText("Demo")).not.toBeInTheDocument();
+  });
+
   it("links to detail page", () => {
     render(<ListingRow listing={baseListing} />);
     const link = screen.getByRole("link", { name: "Apollolaan 154" });

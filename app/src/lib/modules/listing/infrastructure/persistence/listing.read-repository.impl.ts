@@ -31,7 +31,7 @@ export class ListingReadRepositoryImpl implements ListingReadRepository {
         ag.id             AS agency_id,
         ag.name           AS agency_name,
         ag.website_url    AS agency_website_url,
-        COALESCE(ag.is_demo, false) AS agency_is_demo,
+        COALESCE(ag.is_demo, false) AS agency_is_demo, -- NULL when agency_id is null (LEFT JOIN produces no row)
         l.property_type_id,
         l.is_stille_verkoop,
         l.living_area_m2,
@@ -136,7 +136,7 @@ export class ListingReadRepositoryImpl implements ListingReadRepository {
         ag.id             AS agency_id,
         ag.name           AS agency_name,
         ag.website_url    AS agency_website_url,
-        COALESCE(ag.is_demo, false) AS agency_is_demo,
+        COALESCE(ag.is_demo, false) AS agency_is_demo, -- NULL when agency_id is null (LEFT JOIN produces no row)
         l.property_type_id,
         l.is_stille_verkoop,
         l.living_area_m2,

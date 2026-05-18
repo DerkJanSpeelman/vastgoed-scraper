@@ -118,7 +118,7 @@ const listingData = [
 export async function seed(sql: Sql) {
   await sql.begin(async (tx) => {
     const [demoAgency] = await tx<{ id: number }[]>/* sql */`
-      SELECT id FROM agencies WHERE is_demo = true LIMIT 1
+      SELECT id FROM agencies WHERE is_demo = true ORDER BY id LIMIT 1
     `;
     if (!demoAgency) throw new Error("Demo agency not found — run AgenciesSeeder first");
 
