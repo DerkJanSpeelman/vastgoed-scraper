@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button/Button';
 import { ActionState, createAgencyAction, updateAgencyAction } from './actions';
 import styles from './AgencyForm.module.css';
 
+
 interface AgencyFormProps {
   mode: 'create';
   defaultValues?: never;
@@ -46,7 +47,7 @@ export function AgencyForm(props: Props) {
       {state?.error && (
         <div className={styles.errorBanner} role="alert">{state.error}</div>
       )}
-      {state === null && props.mode === 'edit' && (
+      {state?.ok && props.mode === 'edit' && (
         <div className={styles.successBanner}>Wijzigingen opgeslagen</div>
       )}
 

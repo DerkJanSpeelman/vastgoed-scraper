@@ -6,6 +6,7 @@ import { AgencyWriteRepository } from "@/lib/modules/agency/domain/repositories/
 function makeRepo(listingCount: number): AgencyWriteRepository {
   return {
     save: jest.fn().mockResolvedValue(1),
+    findById: jest.fn().mockResolvedValue(null),
     update: jest.fn().mockResolvedValue(undefined),
     delete: jest.fn().mockResolvedValue(undefined),
     listingCount: jest.fn().mockResolvedValue(listingCount),

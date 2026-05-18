@@ -15,6 +15,7 @@ import { DataSource } from '@/lib/modules/agency/domain/agency.entity';
 
 export interface ActionState {
   error?: string;
+  ok?: boolean;
 }
 
 export async function createAgencyAction(
@@ -23,7 +24,10 @@ export async function createAgencyAction(
 ): Promise<ActionState | null> {
   const name = formData.get('name') as string;
   const websiteUrl = (formData.get('website_url') as string) || null;
-  const dataSource = (formData.get('data_source') as DataSource) ?? 'scraper';
+  const rawSource = formData.get('data_source') as string;
+  const dataSource: DataSource = (['scraper', 'mailing_list', 'both'] as DataSource[]).includes(rawSource as DataSource)
+    ? rawSource as DataSource
+    : 'scraper';
 
   let id: number;
   try {
@@ -44,9 +48,13 @@ export async function updateAgencyAction(
   formData: FormData,
 ): Promise<ActionState | null> {
   const id = parseInt(formData.get('id') as string, 10);
+  if (!Number.isFinite(id)) return { error: 'Ongeldig id' };
   const name = formData.get('name') as string;
   const websiteUrl = (formData.get('website_url') as string) || null;
-  const dataSource = (formData.get('data_source') as DataSource) ?? 'scraper';
+  const rawSource = formData.get('data_source') as string;
+  const dataSource: DataSource = (['scraper', 'mailing_list', 'both'] as DataSource[]).includes(rawSource as DataSource)
+    ? rawSource as DataSource
+    : 'scraper';
 
   try {
     await updateAgencyHandler.execute(
@@ -59,7 +67,7 @@ export async function updateAgencyAction(
   }
 
   revalidatePath('/admin/agencies');
-  return null;
+  return { ok: true };
 }
 
 export async function deleteAgencyAction(
@@ -67,6 +75,7 @@ export async function deleteAgencyAction(
   formData: FormData,
 ): Promise<ActionState | null> {
   const id = parseInt(formData.get('id') as string, 10);
+  if (!Number.isFinite(id)) return { error: 'Ongeldig id' };
 
   try {
     await deleteAgencyHandler.execute(new DeleteAgencyCommand(id));

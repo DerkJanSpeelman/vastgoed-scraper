@@ -9,17 +9,20 @@ export class UpdateAgencyHandler {
 
   async execute(command: UpdateAgencyCommand): Promise<void> {
     try {
-      const agency = Agency.create(command.name, command.websiteUrl, command.dataSource);
-      const withId = Agency.existing(
+      const existing = await this.repo.findById(command.id);
+      if (!existing) throw new AgencyNotFoundError(command.id);
+
+      const validated = Agency.create(command.name, command.websiteUrl, command.dataSource);
+      const updated = Agency.existing(
         command.id,
-        agency.name,
-        agency.websiteUrl,
-        false,
-        agency.dataSource,
-        new Date(),
+        validated.name,
+        validated.websiteUrl,
+        existing.isDemo,
+        validated.dataSource,
+        existing.createdAt,
         new Date(),
       );
-      await this.repo.update(withId);
+      await this.repo.update(updated);
     } catch (e) {
       if (e instanceof AppError) throw e;
       console.error("[UpdateAgencyHandler] Unexpected error", { id: command.id }, e);
@@ -27,5 +30,3 @@ export class UpdateAgencyHandler {
     }
   }
 }
-
-export { AgencyNotFoundError };

@@ -2,6 +2,8 @@ import { ValidationError } from "@/lib/errors";
 
 export type DataSource = "scraper" | "mailing_list" | "both";
 
+const VALID_DATA_SOURCES: DataSource[] = ["scraper", "mailing_list", "both"];
+
 export class Agency {
   private constructor(
     readonly id: number,
@@ -21,6 +23,7 @@ export class Agency {
     const trimmed = name.trim();
     if (!trimmed) throw new ValidationError("Naam is verplicht");
     if (trimmed.length > 200) throw new ValidationError("Naam mag maximaal 200 tekens zijn");
+    if (!VALID_DATA_SOURCES.includes(dataSource)) throw new ValidationError("Ongeldige databron");
     return new Agency(0, trimmed, websiteUrl || null, false, dataSource, new Date(), new Date());
   }
 
