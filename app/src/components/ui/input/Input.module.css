@@ -1,0 +1,125 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+}
+
+.inputBase {
+  font-size: 0.875rem;
+  color: var(--ink);
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 12px;
+  width: 100%;
+  outline: none;
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.inputBase::placeholder {
+  color: var(--ink-4);
+}
+
+.inputBase:hover:not(:disabled):not(.error) {
+  border-color: var(--ink-3);
+}
+
+.inputBase:focus:not(.error) {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px oklch(0.62 0.235 28 / 0.15);
+}
+
+.inputBase.hasError {
+  border-color: oklch(0.50 0.190 25);
+}
+
+.inputBase.hasError:focus {
+  box-shadow: 0 0 0 3px oklch(0.50 0.190 25 / 0.15);
+}
+
+.inputBase:disabled {
+  background: var(--bg-soft);
+  color: var(--ink-3);
+  cursor: not-allowed;
+}
+
+/* addon wrapper */
+.addonWrapper {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg-card);
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.addonWrapper:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px oklch(0.62 0.235 28 / 0.15);
+}
+
+.addonWrapper.hasError {
+  border-color: oklch(0.50 0.190 25);
+}
+
+.addonWrapper.hasError:focus-within {
+  box-shadow: 0 0 0 3px oklch(0.50 0.190 25 / 0.15);
+}
+
+.addonWrapper .addonInput {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  border-radius: 0;
+  padding: 9px 12px;
+  font-size: 0.875rem;
+  color: var(--ink);
+  background: transparent;
+  outline: none;
+}
+
+.addonWrapper .addonInput::placeholder {
+  color: var(--ink-4);
+}
+
+.addon {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+  background: var(--bg-soft);
+  border-right: 1px solid var(--line);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.addonAfter {
+  border-right: none;
+  border-left: 1px solid var(--line);
+}
+
+.hint {
+  font-size: 0.6875rem;
+  color: var(--ink-3);
+  line-height: 1.5;
+}
+
+.errorMsg {
+  font-size: 0.6875rem;
+  color: oklch(0.50 0.190 25);
+  font-weight: 500;
+}

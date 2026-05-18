@@ -1,0 +1,106 @@
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.back {
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+  text-decoration: none;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.scraperCards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.scraperCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg-card);
+}
+
+.scraperCardTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.scraperCardStatus {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+}
+
+.deleteSection {
+  padding-top: 24px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.deleteTitle {
+  margin: 0 0 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: oklch(0.50 0.190 25);
+}
+
+.deleteHint {
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+  margin: 0 0 16px;
+}
+
+.deleteActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.deleteError {
+  font-size: 0.8125rem;
+  color: oklch(0.50 0.190 25);
+  font-weight: 500;
+}

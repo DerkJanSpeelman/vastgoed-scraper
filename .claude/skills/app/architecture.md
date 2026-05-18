@@ -88,7 +88,7 @@ Single PostgreSQL instance shared for all domains.
 | `listing` | `listings`, `listing_images`, `listing_prices` | — | `GetListings`, `GetListingById` |
 | `location` | `provinces`, `municipalities`, `cities` | — | `GetProvinces`, `GetCities`, `GetMunicipalities` |
 | `scraper` | `scraper_configs`, `scraper_runs` | `UpsertScraperConfig`, `CreateScraperRun` | `GetScraperConfigs`, `GetScraperRuns` |
-| `agency` | `agencies` | — | `GetAgencies` |
+| `agency` | `agencies` | `CreateAgency`, `UpdateAgency`, `DeleteAgency` | `GetAgencies`, `GetAgencyById` |
 
 ## Domain modules (add as they are created)
 
@@ -128,6 +128,7 @@ Container: `src/lib/modules/<domain>/<domain>.container.ts`
 |---|---|---|---|
 | `Badge` | ui | `src/components/ui/badge/Badge.tsx` | `variant: "nieuwbouw" \| "stille-verkoop" \| "demo"` |
 | `Button` | ui | `src/components/ui/button/Button.tsx` | `text, variant?, size?, href?, onClick?, disabled?` — renders as `<button>` or `<Link>` |
+| `Input` | ui | `src/components/ui/input/Input.tsx` | `label?, hint?, error?, before?, after?` — forwardRef, label+hint+error, before/after addons |
 | `EnergyLabel` | ui | `src/components/ui/energy-label/EnergyLabel.tsx` | `label: string \| null \| undefined` — renders colored badge or "—" |
 | `ScraperStatusIcon` | ui | `src/components/ui/scraper-status-icon/ScraperStatusIcon.tsx` | `status: ScraperConfigStatus \| null` — colored icon with Dutch tooltip |
 | `StatItem` | ui | `src/components/ui/stat-item/StatItem.tsx` | `icon: ReactNode, value: ReactNode, unit?: string` — renders "—" for empty values |
