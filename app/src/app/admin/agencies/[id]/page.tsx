@@ -7,6 +7,10 @@ import { ScraperStatusIcon } from '@/components/ui/scraper-status-icon/ScraperSt
 import { Button } from '@/components/ui/button/Button';
 import { AgencyForm } from '../AgencyForm';
 import { DeleteAgencyForm } from './DeleteAgencyForm';
+import { ManualRunButton } from '@/components/modules/scraper/ManualRunButton';
+import { scraperContainer } from '@/lib/modules/scraper/scraper.container';
+import { GetScraperConfigsQuery } from '@/lib/modules/scraper/application/queries/get-scraper-configs/get-scraper-configs.query';
+import { GetScraperRunsQuery } from '@/lib/modules/scraper/application/queries/get-scraper-runs/get-scraper-runs.query';
 import { ScraperConfigStatus } from '@/lib/modules/agency/application/queries/get-agencies/get-agencies.dto';
 import styles from './page.module.css';
 
@@ -33,9 +37,19 @@ export default async function AgencyDetailPage({ params }: Props) {
     throw e;
   }
 
-  const overviewConfigured = agency.overviewConfigId !== null;
-  const detailConfigured = agency.detailConfigId !== null;
+  const [configs, runs] = await Promise.all([
+    scraperContainer.getScraperConfigsHandler.execute(new GetScraperConfigsQuery(agencyId)),
+    scraperContainer.getScraperRunsHandler.execute(new GetScraperRunsQuery(agencyId)),
+  ]);
+
+  const overviewConfig = configs.find(c => c.type === 'overview') ?? null;
+  const detailConfig = configs.find(c => c.type === 'detail') ?? null;
+  const overviewConfigured = overviewConfig !== null;
+  const detailConfigured = detailConfig !== null;
   const showConfigureCTA = !overviewConfigured || !detailConfigured;
+
+  const lastOverviewRun = runs.filter(r => r.configType === 'overview')[0] ?? null;
+  const lastDetailRun = runs.filter(r => r.configType === 'detail')[0] ?? null;
 
   return (
     <div className={styles.sections}>
@@ -101,22 +115,35 @@ export default async function AgencyDetailPage({ params }: Props) {
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Scrapers</h2>
           <div className={styles.scraperCards}>
-            {[
-              { type: 'overview', configId: agency.overviewConfigId, status: agency.overviewStatus },
-              { type: 'detail', configId: agency.detailConfigId, status: agency.detailStatus },
-            ].map(({ type, status }) => (
+            {([
+              { type: 'overview' as const, config: overviewConfig, status: agency.overviewStatus, lastRun: lastOverviewRun },
+              { type: 'detail' as const, config: detailConfig, status: agency.detailStatus, lastRun: lastDetailRun },
+            ]).map(({ type, config, status, lastRun }) => (
               <div key={type} className={styles.scraperCard}>
                 <div className={styles.scraperCardTitle}>{SCRAPER_TYPE_LABELS[type]}</div>
                 <div className={styles.scraperCardStatus}>
                   <ScraperStatusIcon status={status as ScraperConfigStatus | null} />
                   {status ?? 'Onbekend'}
                 </div>
-                <Button
-                  text="Bewerk configuratie"
-                  variant="secondary"
-                  size="sm"
-                  href={`/admin/agencies/${agencyId}/scrapers/${type}`}
-                />
+                {lastRun && (
+                  <div className={styles.scraperCardMeta}>
+                    Laatste run: {new Date(lastRun.createdAt).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' })}
+                    {lastRun.status === 'failed' && (
+                      <Link href={`/admin/scrapers/${lastRun.id}`} className={styles.errorLink}> — bekijk fout</Link>
+                    )}
+                  </div>
+                )}
+                <div className={styles.scraperCardActions}>
+                  <Button
+                    text="Bewerk configuratie"
+                    variant="secondary"
+                    size="sm"
+                    href={`/admin/agencies/${agencyId}/scrapers/${type}`}
+                  />
+                  {config && (
+                    <ManualRunButton agencyId={agencyId} scraperConfigId={config.id} type={type} />
+                  )}
+                </div>
               </div>
             ))}
           </div>

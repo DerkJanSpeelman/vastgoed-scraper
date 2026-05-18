@@ -75,6 +75,27 @@
   color: var(--ink-3);
 }
 
+.scraperCardMeta {
+  font-size: 0.75rem;
+  color: var(--ink-3);
+}
+
+.scraperCardActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.errorLink {
+  color: #dc2626;
+  text-decoration: none;
+  font-size: 0.75rem;
+}
+
+.errorLink:hover { text-decoration: underline; }
+
 .deleteSection {
   padding-top: 24px;
   border-top: 1px solid var(--line-soft);

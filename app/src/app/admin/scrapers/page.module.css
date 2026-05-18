@@ -1,0 +1,49 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.statusPending  { background: #f3f4f6; color: #6b7280; }
+.statusRunning  { background: #dbeafe; color: #1d4ed8; }
+.statusSuccess  { background: #dcfce7; color: #15803d; }
+.statusFailed   { background: #fee2e2; color: #b91c1c; }
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+.link:hover { text-decoration: underline; }
+
+.empty {
+  padding: 3rem;
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 0.875rem;
+}

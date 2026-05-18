@@ -209,7 +209,7 @@ CREATE TABLE scraper_runs (
 
 ---
 
-### Phase 6 — Scraper run history [ ]
+### Phase 6 — Scraper run history [x] PR #13
 
 **Scope:**
 - `/admin/scrapers` page — table of all scraper runs across agencies, sortable by agency, type, status, started_at.
