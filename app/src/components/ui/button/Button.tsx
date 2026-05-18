@@ -11,9 +11,8 @@ interface BaseButtonProps {
   className?: string;
 }
 
-interface ButtonAsButton extends BaseButtonProps {
+interface ButtonAsButton extends BaseButtonProps, Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'className'> {
   href?: never;
-  onClick?: () => void;
   type?: 'button' | 'submit' | 'reset';
   text: string;
 }
@@ -36,6 +35,7 @@ export function Button({
   href,
   onClick,
   type = 'button',
+  ...rest
 }: ButtonProps) {
   const cls = [
     styles.button,
@@ -53,7 +53,13 @@ export function Button({
   }
 
   return (
-    <button type={type} disabled={disabled} onClick={onClick} className={cls}>
+    <button
+      type={type}
+      disabled={disabled}
+      onClick={onClick}
+      className={cls}
+      {...(rest as React.ButtonHTMLAttributes<HTMLButtonElement>)}
+    >
       {text}
     </button>
   );

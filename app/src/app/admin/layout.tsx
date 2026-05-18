@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { NavLink } from './NavLink';
 import styles from './layout.module.css';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -7,12 +7,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className={styles.sidebar}>
         <div className={styles.brand}>Admin</div>
         <nav className={styles.nav}>
-          <Link href="/admin/agencies" className={styles.navLink}>
-            Makelaars
-          </Link>
-          <Link href="/admin/scrapers" className={styles.navLink}>
-            Scraper runs
-          </Link>
+          <NavLink href="/admin/agencies">Makelaars</NavLink>
+          <NavLink href="/admin/scrapers">Scraper runs</NavLink>
         </nav>
       </aside>
       <main className={styles.main}>

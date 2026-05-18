@@ -12,6 +12,14 @@ const DATA_SOURCE_LABELS: Record<string, string> = {
   both: 'Beide',
 };
 
+function safeHostname(url: string): string {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return url;
+  }
+}
+
 function formatDate(iso: string | null): string {
   if (!iso) return '—';
   return new Intl.DateTimeFormat('nl-NL', {
@@ -43,7 +51,7 @@ const columns: ColumnDef<GetAgenciesDto>[] = [
           className={styles.websiteLink}
           onClick={(e) => e.stopPropagation()}
         >
-          {new URL(r.websiteUrl).hostname}
+          {safeHostname(r.websiteUrl)}
         </a>
       ) : (
         <span className={styles.emptyCell}>—</span>
@@ -76,7 +84,7 @@ const columns: ColumnDef<GetAgenciesDto>[] = [
     key: 'lastRun',
     header: 'Laatste run',
     sortable: true,
-    sortValue: (r) => r.lastRunAt ?? '',
+    sortValue: (r) => r.lastRunAt ?? '0000-00-00T00:00:00.000Z',
     render: (r) => formatDate(r.lastRunAt),
   },
   {

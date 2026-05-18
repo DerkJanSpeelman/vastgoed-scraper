@@ -35,7 +35,7 @@
   user-select: none;
 }
 
-.thSortable:hover .sortIndicator {
+.thSortable:hover .sortIndicator:not(.active) {
   opacity: 0.4;
 }
 
