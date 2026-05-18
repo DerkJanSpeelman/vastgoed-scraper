@@ -1,0 +1,19 @@
+.energy {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 2px 7px;
+  border-radius: 3px;
+  color: white;
+  font-variant-numeric: tabular-nums;
+  display: inline-block;
+}
+
+.A, .Ap, .App { background: oklch(0.60 0.165 145); }
+.B  { background: oklch(0.65 0.155 130); }
+.C  { background: oklch(0.72 0.135 105); }
+.D  { background: oklch(0.72 0.140 80); }
+.E  { background: oklch(0.66 0.150 55); }
+.F  { background: oklch(0.60 0.165 35); }
+.G  { background: oklch(0.55 0.180 25); }
+.na { background: var(--ink-4); }

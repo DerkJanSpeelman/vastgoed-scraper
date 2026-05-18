@@ -1,0 +1,30 @@
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.icon {
+  color: var(--ink-3);
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+.value {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.placeholder {
+  color: var(--ink-4);
+  font-weight: 400;
+}
+
+.unit {
+  color: var(--ink-3);
+  font-weight: 400;
+}

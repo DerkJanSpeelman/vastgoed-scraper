@@ -1,0 +1,32 @@
+:root {
+  /* neutrals */
+  --bg:         oklch(0.995 0 0);
+  --bg-soft:    oklch(0.975 0.002 260);
+  --bg-card:    oklch(1 0 0);
+  --line:       oklch(0.915 0.004 260);
+  --line-soft:  oklch(0.945 0.003 260);
+  --ink:        oklch(0.16 0.012 260);
+  --ink-2:      oklch(0.36 0.010 260);
+  --ink-3:      oklch(0.55 0.008 260);
+  --ink-4:      oklch(0.74 0.006 260);
+
+  /* coral — stille verkoop */
+  --accent:      oklch(0.62 0.235 28);
+  --accent-soft: oklch(0.965 0.040 28);
+  --accent-ink:  oklch(0.45 0.200 28);
+
+  /* indigo — nieuwbouw */
+  --nb:          oklch(0.54 0.180 258);
+  --nb-soft:     oklch(0.965 0.030 258);
+  --nb-ink:      oklch(0.42 0.170 258);
+
+  --good:        oklch(0.62 0.155 150);
+
+  /* typography */
+  --font-sans: "Geist", ui-sans-serif, -apple-system, "Inter", system-ui, sans-serif;
+
+  /* motion */
+  --duration-fast:    120ms;
+  --duration-normal:  280ms;
+  --ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+}
