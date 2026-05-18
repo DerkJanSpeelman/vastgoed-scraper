@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from './ManualRunButton.module.css';
 
 interface Props {
@@ -14,6 +15,7 @@ type State = 'idle' | 'loading' | 'queued' | 'error';
 export function ManualRunButton({ agencyId, scraperConfigId, type }: Props) {
   const [state, setState] = useState<State>('idle');
   const [errorMsg, setErrorMsg] = useState<string>('');
+  const router = useRouter();
 
   async function handleClick() {
     setState('loading');
@@ -29,6 +31,7 @@ export function ManualRunButton({ agencyId, scraperConfigId, type }: Props) {
         setState('error');
       } else {
         setState('queued');
+        router.refresh();
       }
     } catch {
       setErrorMsg('Kon de server niet bereiken');

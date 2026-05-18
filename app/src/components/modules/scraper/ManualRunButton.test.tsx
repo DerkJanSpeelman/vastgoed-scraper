@@ -2,6 +2,8 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ManualRunButton } from './ManualRunButton';
 
+jest.mock('next/navigation', () => ({ useRouter: () => ({ refresh: jest.fn() }) }));
+
 global.fetch = jest.fn();
 
 beforeEach(() => jest.clearAllMocks());
