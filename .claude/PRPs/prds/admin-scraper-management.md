@@ -145,7 +145,7 @@ CREATE TABLE scraper_runs (
 
 ---
 
-### Phase 4 — Agency CRUD [ ]
+### Phase 4 — Agency CRUD [x] PR #11
 
 **Scope:**
 - `/admin/agencies/new` — create form: name (required), website_url (optional), data_source toggle (`scraper | mailing_list | both`).
