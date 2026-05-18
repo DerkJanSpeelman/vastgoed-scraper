@@ -10,7 +10,6 @@ export class ScraperConfigWriteRepositoryImpl implements ScraperConfigWriteRepos
       INSERT INTO scraper_configs (agency_id, type, status, uri_path, config)
       VALUES (${config.agencyId}, ${config.type}, ${config.status}, ${config.uriPath}, ${sql.json(config.config as Parameters<typeof sql.json>[0])})
       ON CONFLICT (agency_id, type) DO UPDATE SET
-        status     = EXCLUDED.status,
         uri_path   = EXCLUDED.uri_path,
         config     = EXCLUDED.config,
         updated_at = NOW()
@@ -19,16 +18,6 @@ export class ScraperConfigWriteRepositoryImpl implements ScraperConfigWriteRepos
     return rows[0].id;
   }
 
-  async update(config: ScraperConfig): Promise<void> {
-    await sql`
-      UPDATE scraper_configs SET
-        status     = ${config.status},
-        uri_path   = ${config.uriPath},
-        config     = ${sql.json(config.config as Parameters<typeof sql.json>[0])},
-        updated_at = NOW()
-      WHERE id = ${config.id}
-    `;
-  }
 }
 
 export class ScraperRunWriteRepositoryImpl implements ScraperRunWriteRepository {

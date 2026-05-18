@@ -21,6 +21,16 @@ export class ScraperConfig {
     return new ScraperConfig(0, agencyId, type, "unconfigured", null, {}, null, new Date(), new Date());
   }
 
+  static upsert(
+    agencyId: number,
+    type: ScraperType,
+    uriPath: string | null,
+    config: Record<string, unknown>,
+  ): ScraperConfig {
+    const status: ScraperStatus = uriPath ? "configured" : "unconfigured";
+    return new ScraperConfig(0, agencyId, type, status, uriPath, config, null, new Date(), new Date());
+  }
+
   static existing(
     id: number,
     agencyId: number,

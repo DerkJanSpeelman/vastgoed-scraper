@@ -28,6 +28,7 @@ export class ScraperReadRepositoryImpl implements ScraperConfigReadRepository, S
         JOIN scraper_configs sc ON sc.id = sr.scraper_config_id
         WHERE sr.agency_id = ${agencyId}
         ORDER BY sr.created_at DESC
+        LIMIT 100
       `;
     }
     return sql<GetScraperRunsRow[]>`
@@ -41,6 +42,7 @@ export class ScraperReadRepositoryImpl implements ScraperConfigReadRepository, S
       JOIN agencies ag ON ag.id = sr.agency_id
       JOIN scraper_configs sc ON sc.id = sr.scraper_config_id
       ORDER BY sr.created_at DESC
+      LIMIT 100
     `;
   }
 }

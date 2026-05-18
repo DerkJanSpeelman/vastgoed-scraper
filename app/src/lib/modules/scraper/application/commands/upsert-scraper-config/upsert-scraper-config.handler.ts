@@ -8,7 +8,7 @@ export class UpsertScraperConfigHandler {
 
   async execute(command: UpsertScraperConfigCommand): Promise<number> {
     try {
-      const config = ScraperConfig.create(command.agencyId, command.type);
+      const config = ScraperConfig.upsert(command.agencyId, command.type, command.uriPath, command.config);
       return await this.repo.save(config);
     } catch (e) {
       if (e instanceof AppError) throw e;

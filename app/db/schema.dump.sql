@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS scraper_configs (
 CREATE TABLE IF NOT EXISTS scraper_runs (
     id                 SERIAL      PRIMARY KEY,
     scraper_config_id  INTEGER     NOT NULL REFERENCES scraper_configs(id) ON DELETE CASCADE,
-    agency_id          INTEGER     NOT NULL REFERENCES agencies(id),
+    agency_id          INTEGER     NOT NULL REFERENCES agencies(id) ON DELETE CASCADE,
     status             TEXT        NOT NULL DEFAULT 'pending'
                                    CHECK (status IN ('pending', 'running', 'success', 'failed')),
     triggered_by       TEXT        NOT NULL DEFAULT 'manual'
