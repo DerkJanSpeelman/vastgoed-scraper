@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { sql } from "../client";
 import { seed as seedProvinces }     from "./ProvincesSeeder";
 import { seed as seedMunicipalities } from "./MunicipalitiesSeeder";

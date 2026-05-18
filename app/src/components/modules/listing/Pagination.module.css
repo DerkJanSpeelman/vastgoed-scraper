@@ -1,0 +1,50 @@
+.pagination {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 32px;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+  background: var(--bg-card);
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background var(--duration-fast), border-color var(--duration-fast), color var(--duration-fast);
+  font-variant-numeric: tabular-nums;
+}
+
+.btn:hover {
+  border-color: color-mix(in oklab, var(--ink) 25%, var(--line));
+  color: var(--ink);
+}
+
+.btn.active {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+
+.btn.disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.ellipsis {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-4);
+  font-size: 13px;
+}

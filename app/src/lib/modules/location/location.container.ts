@@ -4,5 +4,7 @@ import { GetProvincesHandler } from "./application/queries/get-provinces/get-pro
 const locationReadRepository = new LocationReadRepositoryImpl();
 
 export const locationContainer = {
-  getProvincesHandler: new GetProvincesHandler(locationReadRepository),
+  getProvincesHandler:      new GetProvincesHandler(locationReadRepository),
+  getCitiesHandler:         { execute: () => locationReadRepository.findAllCities() },
+  getMunicipalitiesHandler: { execute: () => locationReadRepository.findAllMunicipalities() },
 };

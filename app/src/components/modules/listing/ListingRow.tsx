@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { GetListingsDto } from "@/lib/modules/listing/application/queries/get-listings/get-listings.dto";
@@ -35,9 +37,10 @@ export function ListingRow({ listing }: ListingRowProps) {
           {listing.imageCount > 0 && (
             <span className={styles.thumbCount}>{listing.imageCount}</span>
           )}
-          {nieuwbouw && (
+          {(nieuwbouw || listing.isStilleVerkoop) && (
             <span className={styles.thumbBadge}>
-              <Badge variant="nieuwbouw" />
+              {listing.isStilleVerkoop && <Badge variant="stille-verkoop" />}
+              {nieuwbouw && <Badge variant="nieuwbouw" />}
             </span>
           )}
         </div>
@@ -94,7 +97,6 @@ export function ListingRow({ listing }: ListingRowProps) {
           <span className={styles.price}>{formatPrice(listing.currentPrice)}</span>
           <span className={styles.priceType}>{formatPriceType(listing.priceTypeId)}</span>
         </div>
-        {listing.isStilleVerkoop && <Badge variant="stille-verkoop" />}
       </div>
     </article>
   );

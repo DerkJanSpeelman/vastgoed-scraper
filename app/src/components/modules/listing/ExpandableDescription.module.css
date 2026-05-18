@@ -1,0 +1,28 @@
+.textWrap {
+  overflow: hidden;
+}
+
+.text {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--ink-2);
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.toggle {
+  display: block;
+  margin-top: 8px;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--accent);
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity var(--duration-fast);
+}
+
+.toggle:hover {
+  opacity: 0.75;
+}

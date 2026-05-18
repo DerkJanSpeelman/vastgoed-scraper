@@ -12,23 +12,24 @@ const provinces: GetProvincesDto[] = [
   { id: 2, name: "Zuid-Holland",  code: "ZH" },
 ];
 
+const counts = { total: 42, nieuwbouw: 10, bestaandeBouw: 30, stilleVerkoop: 2 };
+
 describe("FilterBar", () => {
-  it("renders all filter chips", () => {
-    render(<FilterBar provinces={provinces} totalCount={42} />);
-    expect(screen.getByText("Alle woningen")).toBeInTheDocument();
+  it("renders type chips", () => {
+    render(<FilterBar provinces={provinces} cities={[]} municipalities={[]} counts={counts} />);
     expect(screen.getByText("Bestaande bouw")).toBeInTheDocument();
     expect(screen.getByText("Nieuwbouw")).toBeInTheDocument();
     expect(screen.getByText("Stille verkoop")).toBeInTheDocument();
   });
 
   it("renders province options", () => {
-    render(<FilterBar provinces={provinces} totalCount={42} />);
+    render(<FilterBar provinces={provinces} cities={[]} municipalities={[]} counts={counts} />);
     expect(screen.getByRole("option", { name: "Noord-Holland" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "Zuid-Holland" })).toBeInTheDocument();
   });
 
-  it("shows total count", () => {
-    render(<FilterBar provinces={provinces} totalCount={42} />);
-    expect(screen.getByText("42")).toBeInTheDocument();
+  it("shows stille verkoop count", () => {
+    render(<FilterBar provinces={provinces} cities={[]} municipalities={[]} counts={counts} />);
+    expect(screen.getByText("2")).toBeInTheDocument();
   });
 });
