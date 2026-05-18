@@ -1,0 +1,63 @@
+{
+  "permissions": {
+    "defaultMode": "bypassPermissions",
+    "allow": [
+      "Glob(**)",
+      "Grep(**)",
+      "Read(**)",
+      "Write(**)",
+      "Edit(**)",
+      "Update(**)",
+      "MultiEdit(**)",
+      "Bash(cat*)",
+      "Bash(cp*)",
+      "Bash(ls*)",
+      "Bash(rm*)",
+      "Bash(mv*)",
+      "Bash(mkdir*)",
+      "Bash(cd*)",
+      "Bash(docker compose*)",
+      "Bash(docker*)",
+      "Bash(make*)",
+      "Bash(yarn*)",
+      "Bash(npx*)",
+      "Bash(node*)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git branch*)",
+      "Bash(git checkout*)",
+      "Bash(git pull*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(git push*)",
+      "Bash(git stash*)",
+      "Bash(git fetch*)",
+      "Bash(gh pr*)",
+      "Bash(gh issue*)",
+      "Bash(gh run*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/typecheck.sh\"" }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/test.sh\"" }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/migration-schema-dump.sh\"" }
+        ]
+      }
+    ]
+  }
+}
