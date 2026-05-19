@@ -3,7 +3,6 @@ import { sql } from '@/db/client';
 import { scraperContainer } from '@/lib/modules/scraper/scraper.container';
 import { GetScraperConfigsQuery } from '@/lib/modules/scraper/application/queries/get-scraper-configs/get-scraper-configs.query';
 import { AppError } from '@/lib/errors';
-import { getBoss, SCRAPER_JOB } from '@/lib/queue/boss';
 
 function validateInputUri(inputUri: string, websiteUrl: string | null): boolean {
   if (!websiteUrl) return false;
@@ -53,8 +52,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // Atomic deduplication: lock the scraper_config row for the duration of check+insert
-    // so two concurrent requests cannot both pass the pending/running guard.
+    // Atomic deduplication: lock the config row so two concurrent requests can't both
+    // pass the pending/running guard and insert duplicate runs.
     let runId: number | null = null;
     await sql.begin(async (tx) => {
       await tx`SELECT id FROM scraper_configs WHERE id = ${config.id} FOR UPDATE`;
@@ -78,13 +77,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     if (runId === null) {
       return NextResponse.json(
-        { error: 'Er staat al een run in de wachtrij of is bezig voor deze scraper' },
+        { error: 'Al in wachtrij of bezig — wacht tot de huidige run klaar is' },
         { status: 409 },
       );
     }
 
-    const boss = await getBoss();
-    await boss.send(SCRAPER_JOB, { runId });
+    // Execute in the background — Node.js continues async tasks after the response is sent.
+    // The executor updates run status (running → success/failed) as it goes.
+    const capturedRunId = runId;
+    void scraperContainer.scraperExecutor.execute(capturedRunId).catch((err) => {
+      console.error(`[run route] unhandled error executing run ${capturedRunId}:`, err);
+    });
 
     return NextResponse.json({ id: runId }, { status: 201 });
   } catch (e) {

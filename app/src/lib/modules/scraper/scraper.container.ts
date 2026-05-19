@@ -5,6 +5,8 @@ import { GetScraperRunsHandler } from "./application/queries/get-scraper-runs/ge
 import { GetScraperRunByIdHandler } from "./application/queries/get-scraper-run-by-id/get-scraper-run-by-id.handler";
 import { UpsertScraperConfigHandler } from "./application/commands/upsert-scraper-config/upsert-scraper-config.handler";
 import { CreateScraperRunHandler } from "./application/commands/create-scraper-run/create-scraper-run.handler";
+import { ScraperExecutor } from "./infrastructure/services/scraper-executor";
+import { PlaywrightFetchService } from "./infrastructure/services/playwright-fetch.service";
 
 const scraperReadRepository = new ScraperReadRepositoryImpl();
 const scraperConfigWriteRepository = new ScraperConfigWriteRepositoryImpl();
@@ -18,4 +20,9 @@ export const scraperContainer = {
   createScraperRunHandler: new CreateScraperRunHandler(scraperRunWriteRepository),
   scraperReadRepository,
   scraperRunWriteRepository,
+  scraperExecutor: new ScraperExecutor(
+    scraperReadRepository,
+    scraperRunWriteRepository,
+    new PlaywrightFetchService(),
+  ),
 };
