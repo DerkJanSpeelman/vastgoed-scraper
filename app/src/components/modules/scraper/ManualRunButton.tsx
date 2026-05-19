@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button/Button';
 import styles from './ManualRunButton.module.css';
 
 interface Props {
@@ -41,17 +42,13 @@ export function ManualRunButton({ agencyId, scraperConfigId, type }: Props) {
 
   return (
     <div className={styles.root}>
-      <button
-        type="button"
-        className={styles.btn}
+      <Button
+        text={state === 'loading' ? 'Bezig…' : state === 'queued' ? 'In wachtrij' : 'Handmatig starten'}
+        variant="secondary"
+        size="sm"
         onClick={handleClick}
         disabled={state === 'loading' || state === 'queued'}
-      >
-        {state === 'loading' ? 'Bezig…' : 'Handmatig starten'}
-      </button>
-      {state === 'queued' && (
-        <span className={styles.success}>In wachtrij geplaatst</span>
-      )}
+      />
       {state === 'error' && (
         <span className={styles.error} role="alert">{errorMsg}</span>
       )}

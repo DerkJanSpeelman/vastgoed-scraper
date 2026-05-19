@@ -46,6 +46,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
             <div className={styles.headSub}>
               {nieuwbouw && <Badge variant="nieuwbouw" />}
               {listing.isStilleVerkoop && <Badge variant="stille-verkoop" />}
+              {listing.agencyIsDemo && <Badge variant="demo" />}
               <span className={styles.listingId}>#{listing.id}</span>
             </div>
           </div>

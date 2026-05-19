@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { ScraperConfigForm } from './ScraperConfigForm';
-import { ProxyIframe } from './ProxyIframe';
+import { ProxyIframe, type EvaluateRequest } from './ProxyIframe';
 import type { GetScraperConfigsDto } from '@/lib/modules/scraper/application/queries/get-scraper-configs/get-scraper-configs.dto';
 import styles from './ScraperConfigSplitView.module.css';
 
@@ -16,22 +16,32 @@ interface Props {
 export function ScraperConfigSplitView({ agencyId, agencyDomain, type, existing }: Props) {
   const [activeTargetField, setActiveTargetField] = useState<string | null>(null);
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
+  const [evaluateRequests, setEvaluateRequests] = useState<EvaluateRequest[] | null>(null);
+  const [selectorResults, setSelectorResults] = useState<Record<string, { values: string[]; count: number }>>({});
   const [liveUriPath, setLiveUriPath] = useState<string>(existing?.uriPath ?? '');
   const [liveExampleUrl, setLiveExampleUrl] = useState<string>(
     (existing?.config as Record<string, unknown>)?.example_url as string ?? '',
   );
 
-  const previewUrl = type === 'overview'
-    ? (agencyDomain && liveUriPath ? `${agencyDomain}${liveUriPath}` : null)
-    : (liveExampleUrl || null);
+  const previewUrl = agencyDomain && (type === 'overview' ? liveUriPath : liveExampleUrl)
+    ? `${agencyDomain}${type === 'overview' ? liveUriPath : liveExampleUrl}`
+    : null;
 
   const handleElementSelected = useCallback((fieldKey: string, selector: string) => {
-    setFieldValues(prev => ({ ...prev, [fieldKey]: selector }));
+    setFieldValues({ [fieldKey]: selector });
     setActiveTargetField(null);
   }, []);
 
   const handleTargetRequest = useCallback((fieldKey: string) => {
     setActiveTargetField(prev => prev === fieldKey ? null : fieldKey);
+  }, []);
+
+  const handleEvaluateSelectors = useCallback((requests: EvaluateRequest[]) => {
+    setEvaluateRequests(requests);
+  }, []);
+
+  const handleSelectorResult = useCallback((fieldKey: string, values: string[], count: number) => {
+    setSelectorResults(prev => ({ ...prev, [fieldKey]: { values, count } }));
   }, []);
 
   return (
@@ -45,6 +55,8 @@ export function ScraperConfigSplitView({ agencyId, agencyDomain, type, existing 
           activeTargetField={activeTargetField}
           onTargetRequest={handleTargetRequest}
           injectedFieldValues={fieldValues}
+          onEvaluateSelectors={handleEvaluateSelectors}
+          selectorResults={selectorResults}
           onUriPathChange={setLiveUriPath}
           onExampleUrlChange={setLiveExampleUrl}
         />
@@ -54,6 +66,8 @@ export function ScraperConfigSplitView({ agencyId, agencyDomain, type, existing 
           url={typeof previewUrl === 'string' && previewUrl ? previewUrl : null}
           activeFieldKey={activeTargetField}
           onElementSelected={handleElementSelected}
+          evaluateRequests={evaluateRequests}
+          onSelectorResult={handleSelectorResult}
         />
       </div>
     </div>

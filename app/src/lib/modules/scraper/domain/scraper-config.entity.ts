@@ -27,7 +27,10 @@ export class ScraperConfig {
     uriPath: string | null,
     config: Record<string, unknown>,
   ): ScraperConfig {
-    const status: ScraperStatus = uriPath ? "configured" : "unconfigured";
+    const isConfigured = type === 'detail'
+      ? !!(config.example_url as string | undefined)
+      : !!uriPath;
+    const status: ScraperStatus = isConfigured ? "configured" : "unconfigured";
     return new ScraperConfig(0, agencyId, type, status, uriPath, config, null, new Date(), new Date());
   }
 

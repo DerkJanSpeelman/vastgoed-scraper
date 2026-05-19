@@ -44,9 +44,6 @@ export default async function AgencyDetailPage({ params }: Props) {
 
   const overviewConfig = configs.find(c => c.type === 'overview') ?? null;
   const detailConfig = configs.find(c => c.type === 'detail') ?? null;
-  const overviewConfigured = overviewConfig !== null;
-  const detailConfigured = detailConfig !== null;
-  const showConfigureCTA = !overviewConfigured || !detailConfigured;
 
   const lastOverviewRun = runs.filter(r => r.configType === 'overview')[0] ?? null;
   const lastDetailRun = runs.filter(r => r.configType === 'detail')[0] ?? null;
@@ -73,82 +70,42 @@ export default async function AgencyDetailPage({ params }: Props) {
         />
       </section>
 
-      {showConfigureCTA && (
-        <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Scraper configureren</h2>
-          <div className={styles.scraperCards}>
-            {!overviewConfigured && (
-              <div className={styles.scraperCard}>
-                <div className={styles.scraperCardTitle}>Overzicht pagina scraper</div>
-                <div className={styles.scraperCardStatus}>
-                  <ScraperStatusIcon status={agency.overviewStatus as ScraperConfigStatus | null} />
-                  Niet geconfigureerd
-                </div>
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Scrapers</h2>
+        <div className={styles.scraperCards}>
+          {([
+            { type: 'overview' as const, config: overviewConfig, status: agency.overviewStatus, lastRun: lastOverviewRun },
+            { type: 'detail' as const, config: detailConfig, status: agency.detailStatus, lastRun: lastDetailRun },
+          ]).map(({ type, config, status, lastRun }) => (
+            <div key={type} className={styles.scraperCard}>
+              <div className={styles.scraperCardTitle}>{SCRAPER_TYPE_LABELS[type]}</div>
+              <div className={styles.scraperCardStatus}>
+                <ScraperStatusIcon status={status as ScraperConfigStatus | null} />
+                {config ? (status ?? 'Onbekend') : 'Niet geconfigureerd'}
+              </div>
+              <div className={styles.scraperCardActions}>
                 <Button
-                  text="Configureer"
+                  text={config ? 'Bewerk configuratie' : 'Configureer'}
                   variant="secondary"
                   size="sm"
-                  href={`/admin/agencies/${agencyId}/scrapers/overview`}
+                  href={`/admin/agencies/${agencyId}/scrapers/${type}`}
                 />
-              </div>
-            )}
-            {!detailConfigured && (
-              <div className={styles.scraperCard}>
-                <div className={styles.scraperCardTitle}>Detail pagina scraper</div>
-                <div className={styles.scraperCardStatus}>
-                  <ScraperStatusIcon status={agency.detailStatus as ScraperConfigStatus | null} />
-                  Niet geconfigureerd
-                </div>
-                <Button
-                  text="Configureer"
-                  variant="secondary"
-                  size="sm"
-                  href={`/admin/agencies/${agencyId}/scrapers/detail`}
-                />
-              </div>
-            )}
-          </div>
-        </section>
-      )}
-
-      {overviewConfigured && detailConfigured && (
-        <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Scrapers</h2>
-          <div className={styles.scraperCards}>
-            {([
-              { type: 'overview' as const, config: overviewConfig, status: agency.overviewStatus, lastRun: lastOverviewRun },
-              { type: 'detail' as const, config: detailConfig, status: agency.detailStatus, lastRun: lastDetailRun },
-            ]).map(({ type, config, status, lastRun }) => (
-              <div key={type} className={styles.scraperCard}>
-                <div className={styles.scraperCardTitle}>{SCRAPER_TYPE_LABELS[type]}</div>
-                <div className={styles.scraperCardStatus}>
-                  <ScraperStatusIcon status={status as ScraperConfigStatus | null} />
-                  {status ?? 'Onbekend'}
-                </div>
-                {lastRun && (
-                  <div className={styles.scraperCardMeta}>
-                    Laatste run: {new Date(lastRun.createdAt).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' })}
-                    {lastRun.status === 'failed' && (
-                      <Link href={`/admin/scrapers/${lastRun.id}`} className={styles.errorLink}> — bekijk fout</Link>
-                    )}
-                  </div>
+                {config && (
+                  <ManualRunButton agencyId={agencyId} scraperConfigId={config.id} type={type} />
                 )}
-                <div className={styles.scraperCardActions}>
-                  <Button
-                    text="Bewerk configuratie"
-                    variant="secondary"
-                    size="sm"
-                    href={`/admin/agencies/${agencyId}/scrapers/${type}`}
-                  />
-                  {config && (
-                    <ManualRunButton agencyId={agencyId} scraperConfigId={config.id} type={type} />
+              </div>
+              {lastRun && (
+                <div className={styles.scraperCardMeta}>
+                  Laatste run: {new Date(lastRun.createdAt).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' })}
+                  {lastRun.status === 'failed' && (
+                    <Link href={`/admin/scrapers/${lastRun.id}`} className={styles.errorLink}> — bekijk fout</Link>
                   )}
                 </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
 
       <DeleteAgencyForm agencyId={agencyId} listingCount={agency.listingCount} />
     </div>

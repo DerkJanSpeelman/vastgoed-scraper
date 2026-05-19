@@ -226,6 +226,99 @@ CREATE TABLE scraper_runs (
 
 ---
 
+### Phase 7 — Scraper execution engine
+
+**Scope:**
+Execute a pending scraper run end-to-end: fetch pages via the Playwright service, apply configured selectors, store listings, update the run record with results.
+
+#### Execution trigger
+
+When `POST /api/admin/scrapers/run` creates a pending run, fire-and-forget the execution immediately — no separate queue processor. The HTTP response (201) returns before execution completes. Execution runs in the background within the same Next.js process.
+
+#### Overview scraper execution flow
+
+1. Mark run `running`, set `started_at`.
+2. Fetch the overview page via `POST scraper:3001/render` with the configured URI path.
+3. Apply `listing_container_selector` (CSS or XPath) to collect all listing item elements.
+4. Apply `detail_link_selector` within each item to extract `href` values → list of detail URLs.
+5. If `total_count_selector` is configured, extract the count for logging.
+6. **Pagination loop** (if `pagination_url_template` is set):
+   - Replace `{page}` with the current page number, starting at 1.
+   - Fetch, apply selectors, collect URLs.
+   - **Stop conditions** (first match wins):
+     a. Listing item selector returns 0 elements.
+     b. SHA-256 hash of the response body matches a previously seen page (redirect detection).
+     c. Hard cap of 200 pages.
+   - Random delay 1–3s between page fetches.
+7. Deduplicate collected detail URLs (same URL may appear on multiple pages).
+8. For each detail URL **not already in `listings` for this agency** (`source_url` check): fetch + scrape detail page (see below). Skip known URLs — record as `listings_found` but not `listings_added`.
+9. Mark run `success`, set `finished_at`, write `listings_found`, `listings_added`, `listings_updated`.
+10. On any unrecoverable error: mark run `failed`, write `error_message` + `error_details`.
+
+#### Detail page scraping
+
+For each detail URL:
+1. Fetch via Playwright service.
+2. For each field in `field_mappings` where a selector is configured:
+   - Apply selector (CSS or XPath).
+   - Extract value using the configured `attribute` (`text`, `href`, `src`, or named attribute).
+   - Apply `transform` if set: `parse_price` → strip non-numeric, parse float; `parse_int` → strip non-numeric, parse int.
+   - `multiple: true` (images) → collect all matches as array.
+3. Map scraped fields to the `listings` schema:
+   - `title` → attempt to split into `street` + `house_number`; fall back to storing in `street` with empty `house_number`.
+   - `city` → look up or create `cities` row; resolve `city_id`.
+   - `price` → insert into `listing_prices` table.
+   - `images` → insert into `listing_images` table.
+   - All other fields → direct column mapping.
+4. Upsert on `(agency_id, source_url)`:
+   - New row → `listings_added++`.
+   - Existing row with changed fields → update + `listings_updated++`.
+   - Existing row, no changes → skip.
+
+#### Data transforms
+
+| Transform | Input example | Output |
+|-----------|--------------|--------|
+| `parse_price` | `"€ 425.000 k.k."` | `425000` |
+| `parse_int` | `"128 m²"` | `128` |
+
+#### New application layer
+
+- `ExecuteScraperRunCommand` + `ExecuteScraperRunHandler` — orchestrates the full flow above.
+- `PlaywrightFetchService` — thin wrapper around `POST scraper:3001/render`; throws `FetchError` on timeout or non-200.
+- `SelectorEngine` — applies CSS (`querySelectorAll`) or XPath (`evaluate`) against the fetched HTML using a server-side DOM parser (e.g. `node-html-parser` or `linkedom`); no browser needed server-side since Playwright already rendered the HTML.
+- `TransformPipeline` — applies `parse_price` / `parse_int` transforms.
+- `ListingUpsertHandler` — upserts a single listing row + prices + images; returns `'added' | 'updated' | 'skipped'`.
+
+#### Error handling
+
+- Per-page fetch errors: log to `error_details`, continue to next page (don't abort the whole run).
+- Per-listing scrape errors: log + skip that listing, continue.
+- If the overview page itself fails to fetch: immediately mark run `failed`.
+- Timeout per page fetch: 20s (reuse existing proxy timeout).
+
+#### New dependencies
+
+- `node-html-parser` or `linkedom` — server-side HTML parsing + CSS selector support.
+- No new infrastructure — reuses existing Playwright service and PostgreSQL.
+
+#### Out of scope for Phase 7
+
+- Scheduled/cron runs (manual trigger only).
+- Bot-detection evasion beyond random delays.
+- Removing listings that are no longer on the site (delisting detection).
+- Progress streaming / live status updates in the UI.
+
+**Acceptance criteria:**
+- Pressing "Handmatig starten" on the agency page transitions the run from `pending` → `running` → `success` (or `failed`).
+- Listings from Varwijnen & Sibma appear in the database after a successful overview + detail run.
+- `listings_added`, `listings_updated`, `listings_found` are correct in the run record.
+- A second run on the same agency skips already-known `source_url`s (no duplicates).
+- Page redirect loop terminates via hash check before the 200-page cap.
+- `make typecheck` passes.
+
+---
+
 ## First real agency
 
 **Varwijnen & Sibma Makelaars** — `https://www.varwijkensibma.nl/`

@@ -1,17 +1,38 @@
 .pagination {
   display: flex;
-  gap: 4px;
-  justify-content: center;
   align-items: center;
-  margin-top: 32px;
+  gap: 16px;
+  border-top: 1px solid var(--line);
+  padding: 24px 0 64px;
+}
+
+.countInfo {
+  font-size: 13px;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.countInfo strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.pages {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  gap: 5px;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 10px;
   border-radius: 4px;
   border: 1px solid var(--line);
   background: var(--bg-card);
@@ -21,6 +42,7 @@
   text-decoration: none;
   transition: background var(--duration-fast), border-color var(--duration-fast), color var(--duration-fast);
   font-variant-numeric: tabular-nums;
+  cursor: pointer;
 }
 
 .btn:hover {
@@ -35,16 +57,19 @@
 }
 
 .btn.disabled {
-  opacity: 0.35;
+  opacity: 0.4;
   pointer-events: none;
+  cursor: not-allowed;
 }
 
-.ellipsis {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.btn.ellipsis {
+  border: none;
+  background: none;
   color: var(--ink-4);
-  font-size: 13px;
+  pointer-events: none;
+  min-width: 34px;
+}
+
+.arrow {
+  padding: 0 12px;
 }

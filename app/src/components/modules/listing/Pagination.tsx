@@ -23,52 +23,79 @@ function buildUrl(params: URLSearchParams, page: number): string {
 
 function pageNumbers(current: number, total: number): (number | "…")[] {
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
-  if (current <= 4) return [1, 2, 3, 4, 5, "…", total];
-  if (current >= total - 3) return [1, "…", total - 4, total - 3, total - 2, total - 1, total];
-  return [1, "…", current - 1, current, current + 1, "…", total];
+  const pages: (number | "…")[] = [1];
+  const start = Math.max(2, current - 1);
+  const end = Math.min(total - 1, current + 1);
+  if (start > 2) pages.push("…");
+  for (let i = start; i <= end; i++) pages.push(i);
+  if (end < total - 1) pages.push("…");
+  pages.push(total);
+  return pages;
 }
 
 export function Pagination({ total, pageSize, currentPage }: PaginationProps) {
   const params = useSearchParams();
-  const totalPages = Math.ceil(total / pageSize);
-  if (totalPages <= 1) return null;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const page = Math.min(currentPage, totalPages);
 
-  const pages = pageNumbers(currentPage, totalPages);
+  const showingFrom = total === 0 ? 0 : (page - 1) * pageSize + 1;
+  const showingTo = Math.min(page * pageSize, total);
+  const prevDisabled = page <= 1;
+  const nextDisabled = page >= totalPages;
+  const pages = pageNumbers(page, totalPages);
 
   return (
-    <nav className={styles.pagination} aria-label="Paginering">
-      <Link
-        href={buildUrl(params, currentPage - 1)}
-        className={`${styles.btn} ${currentPage <= 1 ? styles.disabled : ""}`}
-        aria-disabled={currentPage <= 1}
-        aria-label="Vorige pagina"
-      >
-        ‹
-      </Link>
-
-      {pages.map((p, i) =>
-        p === "…" ? (
-          <span key={`ellipsis-${i}`} className={styles.ellipsis}>…</span>
+    <nav className={styles.pagination} aria-label="Pagina-navigatie">
+      <div className={styles.countInfo}>
+        {total === 0 ? (
+          <span>Geen woningen gevonden</span>
         ) : (
-          <Link
-            key={p}
-            href={buildUrl(params, p)}
-            className={`${styles.btn} ${p === currentPage ? styles.active : ""}`}
-            aria-current={p === currentPage ? "page" : undefined}
-          >
-            {p}
-          </Link>
-        )
-      )}
+          <><strong>{showingFrom}–{showingTo}</strong> van <strong>{total}</strong> woningen</>
+        )}
+      </div>
 
-      <Link
-        href={buildUrl(params, currentPage + 1)}
-        className={`${styles.btn} ${currentPage >= totalPages ? styles.disabled : ""}`}
-        aria-disabled={currentPage >= totalPages}
-        aria-label="Volgende pagina"
-      >
-        ›
-      </Link>
+      <div className={styles.pages}>
+        <Link
+          href={buildUrl(params, page - 1)}
+          className={`${styles.btn} ${styles.arrow}${prevDisabled ? ` ${styles.disabled}` : ""}`}
+          aria-disabled={prevDisabled}
+          aria-label="Vorige pagina"
+          tabIndex={prevDisabled ? -1 : undefined}
+        >
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="m15 18-6-6 6-6"/>
+          </svg>
+          Vorige
+        </Link>
+
+        {pages.map((p, i) =>
+          p === "…" ? (
+            <span key={`ellipsis-${i}`} className={`${styles.btn} ${styles.ellipsis}`} aria-hidden="true">…</span>
+          ) : (
+            <Link
+              key={p}
+              href={buildUrl(params, p)}
+              className={`${styles.btn}${p === page ? ` ${styles.active}` : ""}`}
+              aria-current={p === page ? "page" : undefined}
+            >
+              {p}
+            </Link>
+          )
+        )}
+
+        <Link
+          href={buildUrl(params, page + 1)}
+          className={`${styles.btn} ${styles.arrow}${nextDisabled ? ` ${styles.disabled}` : ""}`}
+          aria-disabled={nextDisabled}
+          aria-label="Volgende pagina"
+          tabIndex={nextDisabled ? -1 : undefined}
+        >
+          Volgende
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="m9 6 6 6-6 6"/>
+          </svg>
+        </Link>
+      </div>
     </nav>
   );
 }
