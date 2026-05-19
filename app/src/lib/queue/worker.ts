@@ -19,12 +19,23 @@ export async function startScraperWorker(): Promise<void> {
     async (jobs: Job<{ runId: number }>[]) => {
       for (const job of jobs) {
         const { runId } = job.data;
-        console.log(`[worker] executing scraper run ${runId}`);
-        await executor.execute(runId);
-        console.log(`[worker] finished scraper run ${runId}`);
+        try {
+          await executor.execute(runId);
+        } catch (err) {
+          // Infrastructure error (DB down, etc.) — executor's own try/catch didn't get to run.
+          // Mark the run failed so it doesn't stay permanently in 'running' state.
+          try {
+            const msg = err instanceof Error ? err.message : String(err);
+            await scraperContainer.scraperRunWriteRepository.updateToFailed(runId, msg, {
+              stack: err instanceof Error ? err.stack : undefined,
+              source: 'worker-infrastructure',
+            });
+          } catch {
+            // If even updateToFailed fails, re-throw so pg-boss can retry/fail the job.
+            throw err;
+          }
+        }
       }
     },
   );
-
-  console.log('[worker] scraper worker started');
 }

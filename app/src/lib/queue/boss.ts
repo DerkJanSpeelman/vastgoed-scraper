@@ -1,14 +1,18 @@
 import { PgBoss } from 'pg-boss';
 
-let boss: PgBoss | null = null;
+let bossPromise: Promise<PgBoss> | null = null;
 
-export async function getBoss(): Promise<PgBoss> {
-  if (boss) return boss;
+async function createBoss(): Promise<PgBoss> {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) throw new Error('DATABASE_URL is not set');
-  boss = new PgBoss({ connectionString });
-  await boss.start();
-  return boss;
+  const instance = new PgBoss({ connectionString });
+  await instance.start();
+  return instance;
+}
+
+export function getBoss(): Promise<PgBoss> {
+  if (!bossPromise) bossPromise = createBoss();
+  return bossPromise;
 }
 
 export const SCRAPER_JOB = 'scraper:execute';

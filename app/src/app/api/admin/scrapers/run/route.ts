@@ -1,9 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { sql } from '@/db/client';
 import { scraperContainer } from '@/lib/modules/scraper/scraper.container';
 import { GetScraperConfigsQuery } from '@/lib/modules/scraper/application/queries/get-scraper-configs/get-scraper-configs.query';
-import { CreateScraperRunCommand } from '@/lib/modules/scraper/application/commands/create-scraper-run/create-scraper-run.command';
 import { AppError } from '@/lib/errors';
 import { getBoss, SCRAPER_JOB } from '@/lib/queue/boss';
+
+function validateInputUri(inputUri: string, websiteUrl: string | null): boolean {
+  if (!websiteUrl) return false;
+  try {
+    const allowed = new URL(websiteUrl);
+    const candidate = new URL(inputUri);
+    return candidate.origin === allowed.origin;
+  } catch {
+    return false;
+  }
+}
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   let body: unknown;
@@ -35,17 +46,42 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    const alreadyQueued = await scraperContainer.scraperReadRepository.hasPendingOrRunning(config.id);
-    if (alreadyQueued) {
+    if (resolvedInputUri !== null && !validateInputUri(resolvedInputUri, config.websiteUrl)) {
+      return NextResponse.json(
+        { error: 'Ongeldige URI: moet overeenkomen met het domein van de makelaar' },
+        { status: 400 },
+      );
+    }
+
+    // Atomic deduplication: lock the scraper_config row for the duration of check+insert
+    // so two concurrent requests cannot both pass the pending/running guard.
+    let runId: number | null = null;
+    await sql.begin(async (tx) => {
+      await tx`SELECT id FROM scraper_configs WHERE id = ${config.id} FOR UPDATE`;
+
+      const [{ pending }] = await tx<[{ pending: boolean }]>`
+        SELECT EXISTS (
+          SELECT 1 FROM scraper_runs
+          WHERE scraper_config_id = ${config.id}
+            AND status IN ('pending', 'running')
+        ) AS pending
+      `;
+      if (pending) return;
+
+      const [row] = await tx<[{ id: number }]>`
+        INSERT INTO scraper_runs (scraper_config_id, agency_id, status, triggered_by, input_uri)
+        VALUES (${config.id}, ${agencyId}, 'pending', 'manual', ${resolvedInputUri ?? null})
+        RETURNING id
+      `;
+      runId = row.id;
+    });
+
+    if (runId === null) {
       return NextResponse.json(
         { error: 'Er staat al een run in de wachtrij of is bezig voor deze scraper' },
         { status: 409 },
       );
     }
-
-    const runId = await scraperContainer.createScraperRunHandler.execute(
-      new CreateScraperRunCommand(config.id, agencyId, 'manual', resolvedInputUri),
-    );
 
     const boss = await getBoss();
     await boss.send(SCRAPER_JOB, { runId });

@@ -8,4 +8,5 @@ export interface GetScraperConfigsRow {
   last_run_at: Date | null;
   created_at:  Date;
   updated_at:  Date;
+  website_url: string | null;
 }

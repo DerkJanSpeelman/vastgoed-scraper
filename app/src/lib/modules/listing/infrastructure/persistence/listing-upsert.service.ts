@@ -1,3 +1,4 @@
+import type postgres from 'postgres';
 import { sql } from "@/db/client";
 
 export interface ScrapedListing {
@@ -33,62 +34,69 @@ function splitAddress(raw: string): { street: string; houseNumber: string } {
 }
 
 export async function upsertListing(listing: ScrapedListing): Promise<UpsertOutcome> {
-  const cityId = await resolveCityId(listing.cityName);
+  const [cityId] = await Promise.all([resolveCityId(listing.cityName)]);
 
-  const existing = await sql<{ id: number; living_area_m2: number | null; description: string | null; energy_label: string | null; year_built: number | null; bedrooms: number | null }[]>`
-    SELECT id, living_area_m2, description, energy_label, year_built, bedrooms
-    FROM listings
-    WHERE agency_id = ${listing.agencyId} AND source_url = ${listing.sourceUrl}
-    LIMIT 1
-  `;
-
-  const resolvedCityId = cityId ?? await sql<{ id: number }[]>`SELECT id FROM cities LIMIT 1`.then(r => r[0]?.id ?? 1);
-
-  if (existing.length === 0) {
-    const rows = await sql<{ id: number }[]>`
-      INSERT INTO listings (
-        street, house_number, city_id, agency_id, source_url,
-        property_type_id, living_area_m2, bedrooms,
-        description, energy_label, year_built
-      ) VALUES (
-        ${listing.street}, ${listing.houseNumber}, ${resolvedCityId}, ${listing.agencyId}, ${listing.sourceUrl},
-        ${listing.propertyTypeId}, ${listing.livingAreaM2 ?? null}, ${listing.bedrooms ?? null},
-        ${listing.description ?? null}, ${listing.energyLabel ?? null}, ${listing.yearBuilt ?? null}
-      )
-      RETURNING id
+  // Wrap the entire insert+price+images in a transaction to keep them atomic.
+  return sql.begin(async (tx) => {
+    const existing = await tx<{ id: number; living_area_m2: number | null; description: string | null; energy_label: string | null; year_built: number | null; bedrooms: number | null }[]>`
+      SELECT id, living_area_m2, description, energy_label, year_built, bedrooms
+      FROM listings
+      WHERE agency_id = ${listing.agencyId} AND source_url = ${listing.sourceUrl}
+      LIMIT 1
     `;
-    const listingId = rows[0].id;
-    await insertPriceAndImages(listingId, listing);
-    return 'added';
-  }
 
-  const row = existing[0];
-  const changed =
-    row.living_area_m2 !== listing.livingAreaM2 ||
-    row.description !== listing.description ||
-    row.energy_label !== listing.energyLabel ||
-    row.year_built !== listing.yearBuilt ||
-    row.bedrooms !== listing.bedrooms;
+    if (existing.length === 0) {
+      const rows = await tx<{ id: number }[]>`
+        INSERT INTO listings (
+          street, house_number, city_id, agency_id, source_url,
+          property_type_id, living_area_m2, bedrooms,
+          description, energy_label, year_built
+        ) VALUES (
+          ${listing.street}, ${listing.houseNumber}, ${cityId ?? null}, ${listing.agencyId}, ${listing.sourceUrl},
+          ${listing.propertyTypeId}, ${listing.livingAreaM2 ?? null}, ${listing.bedrooms ?? null},
+          ${listing.description ?? null}, ${listing.energyLabel ?? null}, ${listing.yearBuilt ?? null}
+        )
+        RETURNING id
+      `;
+      const listingId = rows[0].id;
+      await insertPriceAndImages(tx, listingId, listing);
+      return 'added' as UpsertOutcome;
+    }
 
-  if (!changed) return 'skipped';
+    const row = existing[0];
+    const changed =
+      row.living_area_m2 !== listing.livingAreaM2 ||
+      row.description !== listing.description ||
+      row.energy_label !== listing.energyLabel ||
+      row.year_built !== listing.yearBuilt ||
+      row.bedrooms !== listing.bedrooms;
 
-  await sql`
-    UPDATE listings
-    SET living_area_m2 = ${listing.livingAreaM2 ?? null},
-        bedrooms = ${listing.bedrooms ?? null},
-        description = ${listing.description ?? null},
-        energy_label = ${listing.energyLabel ?? null},
-        year_built = ${listing.yearBuilt ?? null},
-        updated_at = NOW()
-    WHERE id = ${row.id}
-  `;
-  await insertPriceAndImages(row.id, listing);
-  return 'updated';
+    if (!changed) return 'skipped' as UpsertOutcome;
+
+    await tx`
+      UPDATE listings
+      SET living_area_m2 = ${listing.livingAreaM2 ?? null},
+          bedrooms = ${listing.bedrooms ?? null},
+          description = ${listing.description ?? null},
+          energy_label = ${listing.energyLabel ?? null},
+          year_built = ${listing.yearBuilt ?? null},
+          updated_at = NOW()
+      WHERE id = ${row.id}
+    `;
+    await insertPriceAndImages(tx, row.id, listing);
+    return 'updated' as UpsertOutcome;
+  });
 }
 
-async function insertPriceAndImages(listingId: number, listing: ScrapedListing): Promise<void> {
+type SqlTransaction = postgres.TransactionSql;
+
+async function insertPriceAndImages(
+  tx: SqlTransaction,
+  listingId: number,
+  listing: ScrapedListing,
+): Promise<void> {
   if (listing.price !== null) {
-    await sql`
+    await tx`
       INSERT INTO listing_prices (listing_id, amount, price_type_id)
       VALUES (${listingId}, ${listing.price}, 1)
     `;
@@ -99,17 +107,26 @@ async function insertPriceAndImages(listingId: number, listing: ScrapedListing):
     ...listing.floorPlans.map((url, i) => ({ url, isFloorPlan: true, sortOrder: i })),
   ];
 
-  for (const img of allImages) {
-    const exists = await sql<{ id: number }[]>`
-      SELECT id FROM listing_images WHERE listing_id = ${listingId} AND url = ${img.url} LIMIT 1
-    `;
-    if (exists.length === 0) {
-      await sql`
-        INSERT INTO listing_images (listing_id, url, sort_order, is_floor_plan)
-        VALUES (${listingId}, ${img.url}, ${img.sortOrder}, ${img.isFloorPlan})
-      `;
-    }
-  }
+  if (allImages.length === 0) return;
+
+  // Bulk-insert all images in one round-trip using unnest; skip duplicates via NOT EXISTS.
+  const urls = allImages.map(img => img.url);
+  const sortOrders = allImages.map(img => img.sortOrder);
+  const isFloorPlans = allImages.map(img => img.isFloorPlan);
+
+  await tx`
+    INSERT INTO listing_images (listing_id, url, sort_order, is_floor_plan)
+    SELECT ${listingId}, v.url, v.sort_order::int, v.is_floor_plan::bool
+    FROM unnest(
+      ${urls}::text[],
+      ${sortOrders}::int[],
+      ${isFloorPlans}::bool[]
+    ) AS v(url, sort_order, is_floor_plan)
+    WHERE NOT EXISTS (
+      SELECT 1 FROM listing_images li
+      WHERE li.listing_id = ${listingId} AND li.url = v.url
+    )
+  `;
 }
 
 export { splitAddress };

@@ -8,10 +8,12 @@ import { RunContext } from "../../application/queries/get-scraper-runs/get-scrap
 export class ScraperReadRepositoryImpl implements ScraperConfigReadRepository, ScraperRunReadRepository {
   async findByAgencyId(agencyId: number): Promise<GetScraperConfigsRow[]> {
     return sql<GetScraperConfigsRow[]>`
-      SELECT id, agency_id, type, status, uri_path, config, last_run_at, created_at, updated_at
-      FROM scraper_configs
-      WHERE agency_id = ${agencyId}
-      ORDER BY type
+      SELECT sc.id, sc.agency_id, sc.type, sc.status, sc.uri_path, sc.config,
+             sc.last_run_at, sc.created_at, sc.updated_at, a.website_url
+      FROM scraper_configs sc
+      JOIN agencies a ON a.id = sc.agency_id
+      WHERE sc.agency_id = ${agencyId}
+      ORDER BY sc.type
     `;
   }
 
