@@ -1,10 +1,12 @@
 'use client';
 
+import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Table } from '@/components/ui/table/Table';
 import type { ColumnDef } from '@/components/ui/table/Table';
 import type { GetScraperRunsDto } from '@/lib/modules/scraper/application/queries/get-scraper-runs/get-scraper-runs.dto';
+import { deleteScraperRun } from './actions';
 import styles from './page.module.css';
 
 const STATUS_CLASSES: Record<string, string> = {
@@ -33,6 +35,20 @@ function StatusBadge({ status }: { status: string }) {
 function formatDate(iso: string | null): string {
   if (!iso) return '—';
   return new Date(iso).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' });
+}
+
+function DeleteRowButton({ runId }: { runId: number }) {
+  const [pending, startTransition] = useTransition();
+  function handleClick(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (!confirm('Run uit de wachtrij verwijderen?')) return;
+    startTransition(() => { deleteScraperRun(runId); });
+  }
+  return (
+    <button className={styles.deleteRowButton} onClick={handleClick} disabled={pending}>
+      {pending ? '…' : 'Verwijder'}
+    </button>
+  );
 }
 
 const COLUMNS: ColumnDef<GetScraperRunsDto>[] = [
@@ -85,6 +101,12 @@ const COLUMNS: ColumnDef<GetScraperRunsDto>[] = [
     header: 'Toegevoegd',
     sortable: true,
     render: (r) => r.listingsAdded ?? '—',
+  },
+  {
+    key: 'id',
+    header: '',
+    sortable: false,
+    render: (r) => r.status === 'pending' ? <DeleteRowButton runId={r.id} /> : null,
   },
 ];
 

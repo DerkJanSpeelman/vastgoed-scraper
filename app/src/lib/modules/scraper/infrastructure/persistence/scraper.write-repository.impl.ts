@@ -61,4 +61,13 @@ export class ScraperRunWriteRepositoryImpl implements ScraperRunWriteRepository 
       WHERE id = ${id}
     `;
   }
+
+  async deleteIfPending(id: number): Promise<boolean> {
+    const rows = await sql<{ id: number }[]>`
+      DELETE FROM scraper_runs
+      WHERE id = ${id} AND status = 'pending'
+      RETURNING id
+    `;
+    return rows.length > 0;
+  }
 }
