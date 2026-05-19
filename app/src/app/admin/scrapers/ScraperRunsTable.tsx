@@ -37,6 +37,10 @@ function formatDate(iso: string | null): string {
   return new Date(iso).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' });
 }
 
+function ClientDate({ iso }: { iso: string | null }) {
+  return <span suppressHydrationWarning>{formatDate(iso)}</span>;
+}
+
 function DeleteRowButton({ runId }: { runId: number }) {
   const [pending, startTransition] = useTransition();
   function handleClick(e: React.MouseEvent) {
@@ -82,13 +86,13 @@ const COLUMNS: ColumnDef<GetScraperRunsDto>[] = [
     key: 'startedAt',
     header: 'Gestart',
     sortable: true,
-    render: (r) => formatDate(r.startedAt),
+    render: (r) => <ClientDate iso={r.startedAt} />,
   },
   {
     key: 'finishedAt',
     header: 'Klaar',
     sortable: true,
-    render: (r) => formatDate(r.finishedAt),
+    render: (r) => <ClientDate iso={r.finishedAt} />,
   },
   {
     key: 'listingsFound',
