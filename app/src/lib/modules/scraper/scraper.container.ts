@@ -16,4 +16,6 @@ export const scraperContainer = {
   getScraperRunByIdHandler: new GetScraperRunByIdHandler(scraperReadRepository),
   upsertScraperConfigHandler: new UpsertScraperConfigHandler(scraperConfigWriteRepository),
   createScraperRunHandler: new CreateScraperRunHandler(scraperRunWriteRepository),
+  scraperReadRepository,
+  scraperRunWriteRepository,
 };

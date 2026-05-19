@@ -1,5 +1,5 @@
 -- Schema dump — update by hand when writing migrations. Do not regenerate via shell.
--- Last updated: migration 011_create_scraper_runs
+-- Last updated: migration 013_add_input_uri_to_scraper_runs
 
 CREATE TABLE IF NOT EXISTS schema_migrations (
     version TEXT PRIMARY KEY,
@@ -107,5 +107,6 @@ CREATE TABLE IF NOT EXISTS scraper_runs (
     listings_updated   INTEGER,
     error_message      TEXT,
     error_details      JSONB,
+    input_uri          TEXT,
     created_at         TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

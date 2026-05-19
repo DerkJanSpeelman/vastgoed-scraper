@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Table } from '@/components/ui/table/Table';
 import type { ColumnDef } from '@/components/ui/table/Table';
@@ -40,7 +41,7 @@ const COLUMNS: ColumnDef<GetScraperRunsDto>[] = [
     header: 'Makelaar',
     sortable: true,
     render: (r) => (
-      <Link href={`/admin/agencies/${r.agencyId}`} className={styles.link}>{r.agencyName}</Link>
+      <Link href={`/admin/agencies/${r.agencyId}`} className={styles.link} onClick={e => e.stopPropagation()}>{r.agencyName}</Link>
     ),
   },
   {
@@ -80,13 +81,10 @@ const COLUMNS: ColumnDef<GetScraperRunsDto>[] = [
     render: (r) => r.listingsFound ?? '—',
   },
   {
-    key: 'id',
-    header: '',
-    sortable: false,
-    render: (r) =>
-      r.status === 'failed' ? (
-        <Link href={`/admin/scrapers/${r.id}`} className={styles.link}>Details →</Link>
-      ) : null,
+    key: 'listingsAdded',
+    header: 'Toegevoegd',
+    sortable: true,
+    render: (r) => r.listingsAdded ?? '—',
   },
 ];
 
@@ -95,5 +93,13 @@ interface Props {
 }
 
 export function ScraperRunsTable({ runs }: Props) {
-  return <Table columns={COLUMNS} data={runs} rowKey={r => r.id} />;
+  const router = useRouter();
+  return (
+    <Table
+      columns={COLUMNS}
+      data={runs}
+      rowKey={r => r.id}
+      onRowClick={r => router.push(`/admin/scrapers/${r.id}`)}
+    />
+  );
 }

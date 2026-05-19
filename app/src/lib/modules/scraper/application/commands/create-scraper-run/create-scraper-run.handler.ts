@@ -8,7 +8,7 @@ export class CreateScraperRunHandler {
 
   async execute(command: CreateScraperRunCommand): Promise<number> {
     try {
-      const run = ScraperRun.create(command.scraperConfigId, command.agencyId, command.triggeredBy);
+      const run = ScraperRun.create(command.scraperConfigId, command.agencyId, command.triggeredBy, command.inputUri);
       return await this.repo.save(run);
     } catch (e) {
       if (e instanceof AppError) throw e;
