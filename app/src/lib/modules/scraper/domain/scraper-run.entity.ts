@@ -16,16 +16,18 @@ export class ScraperRun {
     readonly errorMessage: string | null,
     readonly errorDetails: Record<string, unknown> | null,
     readonly createdAt: Date,
+    readonly inputUri: string | null,
   ) {}
 
   static create(
     scraperConfigId: number,
     agencyId: number,
     triggeredBy: ScraperRunTrigger,
+    inputUri: string | null = null,
   ): ScraperRun {
     return new ScraperRun(
       0, scraperConfigId, agencyId, "pending", triggeredBy,
-      null, null, null, null, null, null, null, new Date(),
+      null, null, null, null, null, null, null, new Date(), inputUri,
     );
   }
 
@@ -43,11 +45,12 @@ export class ScraperRun {
     errorMessage: string | null,
     errorDetails: Record<string, unknown> | null,
     createdAt: Date,
+    inputUri: string | null = null,
   ): ScraperRun {
     return new ScraperRun(
       id, scraperConfigId, agencyId, status, triggeredBy,
       startedAt, finishedAt, listingsFound, listingsAdded, listingsUpdated,
-      errorMessage, errorDetails, createdAt,
+      errorMessage, errorDetails, createdAt, inputUri,
     );
   }
 }

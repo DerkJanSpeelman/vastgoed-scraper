@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { scraperContainer } from '@/lib/modules/scraper/scraper.container';
 import { GetScraperRunByIdQuery } from '@/lib/modules/scraper/application/queries/get-scraper-run-by-id/get-scraper-run-by-id.query';
+import { DeleteRunButton } from './DeleteRunButton';
 import styles from './page.module.css';
 
 export const dynamic = 'force-dynamic';
@@ -28,6 +29,12 @@ export default async function ScraperRunDetailPage({ params }: { params: Promise
           Run #{run.id}
         </nav>
       </div>
+
+      {run.status === 'pending' && (
+        <div style={{ marginBottom: '1rem' }}>
+          <DeleteRunButton runId={run.id} />
+        </div>
+      )}
 
       <div className={styles.card}>
         <div className={styles.row}>

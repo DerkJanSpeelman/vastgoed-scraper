@@ -11,6 +11,7 @@ import * as m009 from "./009_add_agency_meta";
 import * as m010 from "./010_create_scraper_configs";
 import * as m011 from "./011_create_scraper_runs";
 import * as m012 from "./012_fix_scraper_runs_agency_fk";
+import * as m013 from "./013_add_input_uri_to_scraper_runs";
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) throw new Error("DATABASE_URL is not set");
@@ -30,6 +31,7 @@ const migrations = [
   { version: "010_create_scraper_configs", ...m010 },
   { version: "011_create_scraper_runs", ...m011 },
   { version: "012_fix_scraper_runs_agency_fk", ...m012 },
+  { version: "013_add_input_uri_to_scraper_runs", ...m013 },
 ];
 
 async function migrate() {

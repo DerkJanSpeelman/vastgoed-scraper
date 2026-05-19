@@ -1,9 +1,12 @@
 'use client';
 
+import { useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Table } from '@/components/ui/table/Table';
 import type { ColumnDef } from '@/components/ui/table/Table';
 import type { GetScraperRunsDto } from '@/lib/modules/scraper/application/queries/get-scraper-runs/get-scraper-runs.dto';
+import { deleteScraperRun } from './actions';
 import styles from './page.module.css';
 
 const STATUS_CLASSES: Record<string, string> = {
@@ -34,13 +37,31 @@ function formatDate(iso: string | null): string {
   return new Date(iso).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' });
 }
 
+function ClientDate({ iso }: { iso: string | null }) {
+  return <span suppressHydrationWarning>{formatDate(iso)}</span>;
+}
+
+function DeleteRowButton({ runId }: { runId: number }) {
+  const [pending, startTransition] = useTransition();
+  function handleClick(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (!confirm('Run uit de wachtrij verwijderen?')) return;
+    startTransition(() => { deleteScraperRun(runId); });
+  }
+  return (
+    <button className={styles.deleteRowButton} onClick={handleClick} disabled={pending}>
+      {pending ? '…' : 'Verwijder'}
+    </button>
+  );
+}
+
 const COLUMNS: ColumnDef<GetScraperRunsDto>[] = [
   {
     key: 'agencyName',
     header: 'Makelaar',
     sortable: true,
     render: (r) => (
-      <Link href={`/admin/agencies/${r.agencyId}`} className={styles.link}>{r.agencyName}</Link>
+      <Link href={`/admin/agencies/${r.agencyId}`} className={styles.link} onClick={e => e.stopPropagation()}>{r.agencyName}</Link>
     ),
   },
   {
@@ -65,13 +86,13 @@ const COLUMNS: ColumnDef<GetScraperRunsDto>[] = [
     key: 'startedAt',
     header: 'Gestart',
     sortable: true,
-    render: (r) => formatDate(r.startedAt),
+    render: (r) => <ClientDate iso={r.startedAt} />,
   },
   {
     key: 'finishedAt',
     header: 'Klaar',
     sortable: true,
-    render: (r) => formatDate(r.finishedAt),
+    render: (r) => <ClientDate iso={r.finishedAt} />,
   },
   {
     key: 'listingsFound',
@@ -80,13 +101,16 @@ const COLUMNS: ColumnDef<GetScraperRunsDto>[] = [
     render: (r) => r.listingsFound ?? '—',
   },
   {
+    key: 'listingsAdded',
+    header: 'Toegevoegd',
+    sortable: true,
+    render: (r) => r.listingsAdded ?? '—',
+  },
+  {
     key: 'id',
     header: '',
     sortable: false,
-    render: (r) =>
-      r.status === 'failed' ? (
-        <Link href={`/admin/scrapers/${r.id}`} className={styles.link}>Details →</Link>
-      ) : null,
+    render: (r) => r.status === 'pending' ? <DeleteRowButton runId={r.id} /> : null,
   },
 ];
 
@@ -95,5 +119,13 @@ interface Props {
 }
 
 export function ScraperRunsTable({ runs }: Props) {
-  return <Table columns={COLUMNS} data={runs} rowKey={r => r.id} />;
+  const router = useRouter();
+  return (
+    <Table
+      columns={COLUMNS}
+      data={runs}
+      rowKey={r => r.id}
+      onRowClick={r => router.push(`/admin/scrapers/${r.id}`)}
+    />
+  );
 }

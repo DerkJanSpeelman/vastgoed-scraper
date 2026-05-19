@@ -3,5 +3,6 @@ export class CreateScraperRunCommand {
     readonly scraperConfigId: number,
     readonly agencyId: number,
     readonly triggeredBy: "manual" | "scheduled",
+    readonly inputUri: string | null = null,
   ) {}
 }

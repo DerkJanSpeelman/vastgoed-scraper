@@ -11,6 +11,7 @@ const baseRow: GetScraperConfigsRow = {
   last_run_at: null,
   created_at: new Date("2026-05-18T08:00:00Z"),
   updated_at: new Date("2026-05-18T09:00:00Z"),
+  website_url: "https://example.nl",
 };
 
 describe("toGetScraperConfigsDto", () => {

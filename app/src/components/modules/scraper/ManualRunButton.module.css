@@ -35,3 +35,19 @@
   font-size: 0.8125rem;
   color: #dc2626;
 }
+
+.uriInput {
+  flex: 1;
+  min-width: 0;
+  padding: 0.35rem 0.625rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg-soft);
+  color: var(--ink-1);
+  font-size: 0.8125rem;
+  font-family: inherit;
+}
+
+.uriInput:disabled {
+  opacity: 0.5;
+}

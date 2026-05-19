@@ -30,7 +30,7 @@ describe('ScraperConfigForm — overview', () => {
   it('prefills existing uri_path', () => {
     const existing: GetScraperConfigsDto = {
       id: 1, agencyId: 1, type: 'overview', status: 'configured',
-      uriPath: '/aanbod', config: {}, lastRunAt: null, createdAt: '', updatedAt: '',
+      uriPath: '/aanbod', config: {}, lastRunAt: null, createdAt: '', updatedAt: '', websiteUrl: null,
     };
     render(
       <ScraperConfigForm
