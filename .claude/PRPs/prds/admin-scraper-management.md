@@ -226,7 +226,7 @@ CREATE TABLE scraper_runs (
 
 ---
 
-### Phase 7 — Scraper execution engine
+### Phase 7 — Scraper execution engine [x] PR #14
 
 **Scope:**
 Execute a pending scraper run end-to-end: fetch pages via the Playwright service, apply configured selectors, store listings, update the run record with results.
