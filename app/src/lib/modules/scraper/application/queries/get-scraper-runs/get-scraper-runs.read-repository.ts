@@ -15,4 +15,5 @@ export interface ScraperRunReadRepository {
   findById(id: number): Promise<GetScraperRunsRow | null>;
   findRunContext(runId: number): Promise<RunContext | null>;
   hasPendingOrRunning(scraperConfigId: number): Promise<boolean>;
+  findOldestPendingRunId(): Promise<number | null>;
 }

@@ -111,4 +111,14 @@ export class ScraperReadRepositoryImpl implements ScraperConfigReadRepository, S
     `;
     return rows[0]?.exists ?? false;
   }
+
+  async findOldestPendingRunId(): Promise<number | null> {
+    const rows = await sql<{ id: number }[]>`
+      SELECT id FROM scraper_runs
+      WHERE status = 'pending'
+      ORDER BY created_at ASC
+      LIMIT 1
+    `;
+    return rows[0]?.id ?? null;
+  }
 }
