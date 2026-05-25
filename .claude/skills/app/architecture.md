@@ -137,6 +137,9 @@ Container: `src/lib/modules/<domain>/<domain>.container.ts`
 | `ListingRow` | modules/listing | `src/components/modules/listing/ListingRow.tsx` | `listing: GetListingsDto` — full listing row with image, stats, badges, agency |
 | `FilterBar` | modules/listing | `src/components/modules/listing/FilterBar.tsx` | `provinces: GetProvincesDto[], totalCount: number` — "use client"; chip filters + province select; URL-state driven |
 | `ListingGallery` | modules/listing | `src/components/modules/listing/ListingGallery.tsx` | `images: ListingImageDto[]` — photo grid (main + 4 thumbs + "+N more") + floor plans strip |
+| `ScraperConfigForm` | modules/scraper | `src/components/modules/scraper/ScraperConfigForm.tsx` | `agencyId, agencyDomain, type: "overview"\|"detail", existing, activeTargetField, onTargetRequest` — config form for one scraper type |
+| `ProxyIframe` | modules/scraper | `src/components/modules/scraper/ProxyIframe.tsx` | `url: string\|null, activeFieldKey, onElementSelected` — proxied page iframe with targeting script bridge |
+| `ScraperConfigSplitView` | modules/scraper | `src/components/modules/scraper/ScraperConfigSplitView.tsx` | `agencyId, agencyDomain, type, existing` — 50/50 split: config form left, proxy iframe right; owns targeting state |
 
 ## Environment Variables
 
