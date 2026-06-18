@@ -140,6 +140,7 @@ Container: `src/lib/modules/<domain>/<domain>.container.ts`
 | `ScraperConfigForm` | modules/scraper | `src/components/modules/scraper/ScraperConfigForm.tsx` | `agencyId, agencyDomain, type: "overview"\|"detail", existing, activeTargetField, onTargetRequest` — config form for one scraper type |
 | `ProxyIframe` | modules/scraper | `src/components/modules/scraper/ProxyIframe.tsx` | `url: string\|null, activeFieldKey, onElementSelected` — proxied page iframe with targeting script bridge |
 | `ScraperConfigSplitView` | modules/scraper | `src/components/modules/scraper/ScraperConfigSplitView.tsx` | `agencyId, agencyDomain, type, existing` — 50/50 split: config form left, proxy iframe right; owns targeting state |
+| `ManualRunButton` | modules/scraper | `src/components/modules/scraper/ManualRunButton.tsx` | `agencyId, scraperConfigId, type` — POST /api/admin/scrapers/run, shows queued/error state |
 
 ## Environment Variables
 

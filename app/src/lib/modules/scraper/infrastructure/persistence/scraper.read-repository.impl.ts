@@ -45,4 +45,20 @@ export class ScraperReadRepositoryImpl implements ScraperConfigReadRepository, S
       LIMIT 100
     `;
   }
+
+  async findById(id: number): Promise<GetScraperRunsRow | null> {
+    const rows = await sql<GetScraperRunsRow[]>`
+      SELECT
+        sr.id, sr.scraper_config_id, sr.agency_id,
+        ag.name AS agency_name, sc.type AS config_type,
+        sr.status, sr.triggered_by, sr.started_at, sr.finished_at,
+        sr.listings_found, sr.listings_added, sr.listings_updated,
+        sr.error_message, sr.error_details, sr.created_at
+      FROM scraper_runs sr
+      JOIN agencies ag ON ag.id = sr.agency_id
+      JOIN scraper_configs sc ON sc.id = sr.scraper_config_id
+      WHERE sr.id = ${id}
+    `;
+    return rows[0] ?? null;
+  }
 }

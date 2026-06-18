@@ -31,7 +31,7 @@
 }
 
 .demo {
-  background: color-mix(in oklab, var(--text-muted) 12%, transparent);
-  color: var(--text-muted);
-  border: 1px solid color-mix(in oklab, var(--text-muted) 20%, transparent);
+  background: #fff;
+  color: #111;
+  border: 1px solid #d1d5db;
 }

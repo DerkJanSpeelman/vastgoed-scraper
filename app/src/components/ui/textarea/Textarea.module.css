@@ -1,0 +1,66 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+}
+
+.textareaBase {
+  font-size: 0.875rem;
+  font-family: inherit;
+  color: var(--ink);
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 12px;
+  width: 100%;
+  outline: none;
+  resize: vertical;
+  line-height: 1.5;
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.textareaBase::placeholder {
+  color: var(--ink-4);
+}
+
+.textareaBase:hover:not(:disabled):not(.hasError) {
+  border-color: var(--ink-3);
+}
+
+.textareaBase:focus:not(.hasError) {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px oklch(0.62 0.235 28 / 0.15);
+}
+
+.textareaBase.hasError {
+  border-color: oklch(0.50 0.190 25);
+}
+
+.textareaBase:disabled {
+  background: var(--bg-soft);
+  color: var(--ink-3);
+  cursor: not-allowed;
+  resize: none;
+}
+
+.hint {
+  font-size: 0.6875rem;
+  color: var(--ink-3);
+  line-height: 1.5;
+}
+
+.errorMsg {
+  font-size: 0.6875rem;
+  color: oklch(0.50 0.190 25);
+  font-weight: 500;
+}
