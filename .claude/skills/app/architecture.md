@@ -81,6 +81,14 @@ Single PostgreSQL instance shared for all domains.
 - **Testing**: see `.claude/skills/shared/testing.md` — DONE gate, co-located tests, patterns.
 - **Migrations**: see `.claude/skills/shared/migrations.md` — file template, registration, schema dump.
 
+## Domain modules
+
+| Module | Tables | Commands | Queries |
+|---|---|---|---|
+| `listing` | `listings`, `listing_images`, `listing_prices` | — | `GetListings`, `GetListingById` |
+| `location` | `provinces`, `municipalities`, `cities` | — | `GetProvinces`, `GetCities`, `GetMunicipalities` |
+| `scraper` | `scraper_configs`, `scraper_runs` | `UpsertScraperConfig`, `CreateScraperRun` | `GetScraperConfigs`, `GetScraperRuns` |
+
 ## Domain modules (add as they are created)
 
 Modules live under `src/lib/modules/<domain>/` with the following structure:

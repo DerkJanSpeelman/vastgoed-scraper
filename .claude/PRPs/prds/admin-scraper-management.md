@@ -15,7 +15,7 @@
 
 ## Phases
 
-### Phase 1 — Demo data reset + demo badge [ ]
+### Phase 1 — Demo data reset + demo badge [x] PR #8
 
 **Scope:**
 - Migration `009`: add `is_demo BOOLEAN NOT NULL DEFAULT FALSE` and `data_source TEXT NOT NULL DEFAULT 'scraper'` to `agencies`.
